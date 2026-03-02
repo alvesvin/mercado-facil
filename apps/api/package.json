@@ -1,0 +1,32 @@
+{
+  "name": "@mercado-facil/api",
+  "type": "module",
+  "scripts": {
+    "dev": "bun run --hot src/index.ts",
+    "db:push": "drizzle-kit push"
+  },
+  "exports": {
+    "./trpc": {
+      "types": "./src/ports/trpc/router/index.ts"
+    }
+  },
+  "dependencies": {
+    "@better-auth/expo": "^1.5.0",
+    "@effect/sql-pg": "^0.50.3",
+    "@hono/trpc-server": "^0.4.2",
+    "@trpc/server": "^11.11.0",
+    "better-auth": "^1.4.18",
+    "drizzle-orm": "^1.0.0-beta.15-859cf75",
+    "effect": "^3.19.19",
+    "hono": "^4.12.1",
+    "neverthrow": "^8.2.0",
+    "pg": "^8.19.0",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@mercado-facil/typescript-config": "workspace:*",
+    "@types/bun": "latest",
+    "@types/pg": "^8.18.0",
+    "drizzle-kit": "^1.0.0-beta.15-859cf75"
+  }
+}
