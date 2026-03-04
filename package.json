@@ -20,5 +20,11 @@
   "workspaces": [
     "apps/*",
     "packages/*"
-  ]
+  ],
+  "resolutions": {
+    "hermes-compiler": "250829098.0.4"
+  },
+  "overrides": {
+    "hermes-compiler": "250829098.0.4"
+  }
 }

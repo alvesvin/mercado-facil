@@ -1,0 +1,22 @@
+{
+    "name": "@mercado-facil/trpc",
+    "version": "0.0.0",
+    "type": "module",
+    "private": true,
+    "dependencies": {
+        "@better-auth/expo": "^1.5.3",
+        "@hono/trpc-server": "^0.4.2",
+        "@mercado-facil/db": "workspace:*",
+        "@mercado-facil/domain": "workspace:*",
+        "@mercado-facil/errors": "workspace:*",
+        "@trpc/server": "^11.11.0",
+        "better-auth": "^1.5.3",
+        "effect": "^3.19.19",
+        "hono": "^4.12.5",
+        "zod": "^4.3.6"
+    },
+    "devDependencies": {
+        "@mercado-facil/typescript-config": "workspace:*",
+        "@types/bun": "latest"
+    }
+}
