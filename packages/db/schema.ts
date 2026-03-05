@@ -1,4 +1,4 @@
-import { sql } from "drizzle-orm";
+import { isNull, sql } from "drizzle-orm";
 import {
   pgTable,
   text,
@@ -14,6 +14,7 @@ import {
   pgView,
   customType,
   geometry,
+  pgEnum,
 } from "drizzle-orm/pg-core";
 
 const COMMON_FIELDS = {
@@ -114,30 +115,44 @@ export const brandTable = pgTable("brand", {
 
 export const productTable = pgTable("product", {
   ...COMMON_FIELDS,
-  barcode: text("barcode").notNull(),
+  barcode: text("barcode").notNull().unique(),
   name: text("name").notNull(),
   brand: text("brand").references(() => brandTable.id, {
     onDelete: "set null",
   }),
+  flavor: text("flavor"),
   category: text("category"),
+  quantity: integer("quantity").notNull(),
+  quantityUnit: text("quantity_unit").notNull(),
   subCategory: text("sub_category"),
   description: text("description"),
 });
 
-export const priceTable = pgTable("price", {
-  ...COMMON_FIELDS,
-  userId: uuid("user_id").references(() => userTable.id, {
-    onDelete: "set null",
-  }),
-  productId: uuid("product_id")
-    .notNull()
-    .references(() => productTable.id, { onDelete: "cascade" }),
-  storeId: uuid("store_id").references(() => storeTable.id, {
-    onDelete: "set null",
-  }),
-  price: bigint("price", { mode: "number" }).notNull(),
-  currency: text("currency").notNull().default("BRL"),
-});
+export const priceTypeEnum = pgEnum("price_type", ["unit", "per_kg", "per_l"]);
+
+export const priceTable = pgTable(
+  "price",
+  {
+    ...COMMON_FIELDS,
+    userId: uuid("user_id").references(() => userTable.id, {
+      onDelete: "set null",
+    }),
+    productId: uuid("product_id")
+      .notNull()
+      .references(() => productTable.id, { onDelete: "cascade" }),
+    storeId: uuid("store_id").references(() => storeTable.id, {
+      onDelete: "set null",
+    }),
+    price: bigint("price", { mode: "number" }).notNull(),
+    currency: text("currency").notNull().default("BRL"),
+    type: priceTypeEnum("type").notNull(),
+  },
+  (table) => [
+    index("price_product_id_idx")
+      .on(table.productId, table.storeId)
+      .where(isNull(table.deletedAt)),
+  ],
+);
 
 export const cartTable = pgTable(
   "cart",
@@ -158,17 +173,23 @@ export const cartTable = pgTable(
   ],
 );
 
-export const cartItemTable = pgTable("cart_item", {
-  ...COMMON_FIELDS,
-  cartId: uuid("cart_id")
-    .notNull()
-    .references(() => cartTable.id, { onDelete: "cascade" }),
-  productId: uuid("product_id")
-    .notNull()
-    .references(() => productTable.id, { onDelete: "cascade" }),
-  quantity: integer("quantity").notNull().default(1),
-  completedAt: timestamp("completed_at"),
-});
+export const cartItemTable = pgTable(
+  "cart_item",
+  {
+    ...COMMON_FIELDS,
+    cartId: uuid("cart_id")
+      .notNull()
+      .references(() => cartTable.id, { onDelete: "cascade" }),
+    productId: uuid("product_id")
+      .notNull()
+      .references(() => productTable.id, { onDelete: "restrict" }),
+    priceId: uuid("price_id").references(() => priceTable.id, {
+      onDelete: "restrict",
+    }),
+    quantity: integer("quantity").notNull().default(1),
+  },
+  (table) => [index("cart_item_cart_id_idx").on(table.cartId)],
+);
 
 // PostGis
 export const spatialRefSys = pgTable(

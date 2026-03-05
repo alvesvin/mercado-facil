@@ -1,9 +1,11 @@
 import { cn } from '@/lib/utils';
-import type { LucideIcon, LucideProps } from 'lucide-react-native';
+import type { IconProps as PhosphorIconProps } from 'phosphor-react-native';
 import { cssInterop } from 'nativewind';
+import type { ComponentType } from 'react';
 
-type IconProps = LucideProps & {
-  as: LucideIcon;
+type IconProps = PhosphorIconProps & {
+  className?: string;
+  as: ComponentType<PhosphorIconProps>;
 };
 
 function IconImpl({ as: IconComponent, ...props }: IconProps) {
@@ -35,7 +37,7 @@ cssInterop(IconImpl, {
  * <Icon as={ArrowRight} className="text-red-500" size={16} />
  * ```
  *
- * @param {LucideIcon} as - The Lucide icon component to render.
+ * @param {ComponentType<PhosphorIconProps>} as - The Phosphor icon component to render.
  * @param {string} className - Utility classes to style the icon using Nativewind.
  * @param {number} size - Icon size (defaults to 14).
  * @param {...LucideProps} ...props - Additional Lucide icon props passed to the "as" icon.

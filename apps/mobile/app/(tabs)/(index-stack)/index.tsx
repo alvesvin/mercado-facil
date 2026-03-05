@@ -1,14 +1,11 @@
 import { Button } from '@/components/ui/button';
 import { Icon } from '@/components/ui/icon';
-import { Text } from '@/components/ui/text';
-import { Link, Stack } from 'expo-router';
-import { MoonStarIcon, StarIcon, SunIcon } from 'lucide-react-native';
+import { Stack } from 'expo-router';
 import { useColorScheme } from 'nativewind';
-import { Image, type ImageStyle, StyleSheet, View } from 'react-native';
+import { type ImageStyle } from 'react-native';
 import { useEffect } from 'react';
 import { auth } from '@/lib/auth';
-import { useCameraPermissions } from 'expo-camera'
-import { api } from '@/lib/api';
+import { MoonIcon, SunDimIcon } from 'phosphor-react-native';
 
 const LOGO = {
   light: require('@/assets/images/react-native-reusables-light.png'),
@@ -28,7 +25,6 @@ const IMAGE_STYLE: ImageStyle = {
 
 export default function Screen() {
   const { colorScheme } = useColorScheme();
-  const [cameraPermission, requestCameraPermission] = useCameraPermissions()
 
   useEffect(() => {
     auth.signIn.anonymous().then(console.log).catch(console.error)
@@ -42,8 +38,8 @@ export default function Screen() {
 }
 
 const THEME_ICONS = {
-  light: SunIcon,
-  dark: MoonStarIcon,
+  light: SunDimIcon,
+  dark: MoonIcon,
 };
 
 function ThemeToggle() {

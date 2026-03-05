@@ -9,6 +9,7 @@ export class StoreService extends Effect.Service<StoreService>()(
 
       return {
         search: storeRepository.search.bind(storeRepository),
+        findById: storeRepository.findById.bind(storeRepository),
         findNear: storeRepository.findNear.bind(storeRepository),
       };
     }),

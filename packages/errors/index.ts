@@ -27,3 +27,15 @@ export class UnauthorizedError extends AccessError {
     super({ status: 401, message });
   }
 }
+
+export class ResourceNotFoundError extends UnrecoverableError {
+  constructor(message: string = "Resource not found") {
+    super({ status: 400, message });
+  }
+}
+
+export class ForbiddenError extends AccessError {
+  constructor(message: string = "Forbidden") {
+    super({ status: 403, message });
+  }
+}
