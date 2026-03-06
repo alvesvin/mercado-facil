@@ -1,9 +1,13 @@
-import { procedure, router } from "../trpc";
+import { DB } from "@mercado-facil/db/service";
+import { ProductService } from "@mercado-facil/domain/features/product/ProductService";
 import { ZFindByBarcodeArgs } from "@mercado-facil/domain/features/product/types";
 import { LiveRuntime } from "@mercado-facil/domain/runtime/live";
+import {
+  getProductWithPriceByBarcodeSaga,
+  ZGetProductWithPriceByBarcodeSagaArgs,
+} from "@mercado-facil/domain/sagas/getProductWithPriceByBarcode";
 import { Effect } from "effect";
-import { ProductService } from "@mercado-facil/domain/features/product/ProductService";
-import { DB } from "@mercado-facil/db/service";
+import { procedure, router } from "../trpc";
 
 export const product = router({
   findByBarcode: procedure.input(ZFindByBarcodeArgs).query(({ input }) =>
@@ -15,4 +19,10 @@ export const product = router({
       }).pipe(Effect.provide(DB)),
     ),
   ),
+
+  findWithPriceByBarcodeSaga: procedure
+    .input(ZGetProductWithPriceByBarcodeSagaArgs)
+    .query(({ input }) =>
+      LiveRuntime.runPromise(getProductWithPriceByBarcodeSaga(input).pipe(Effect.provide(DB))),
+    ),
 });

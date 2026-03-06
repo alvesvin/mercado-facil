@@ -1,19 +1,16 @@
-import type { Context as HonoContext } from "hono";
-import { Effect } from "effect";
 import type { Auth } from "@mercado-facil/domain/features/auth/types";
 import { UnauthorizedError } from "@mercado-facil/errors";
+import { Effect } from "effect";
+import type { Context as HonoContext } from "hono";
 import { auth } from "./auth";
 
-export function createContext(_opts: any, c: HonoContext) {
+export function createContext(_opts: unknown, c: HonoContext) {
   // This caches auth calls withing middleware chain
-  let authCache: Auth | null | undefined = undefined;
-
-  console.log("Running createContext");
+  let authCache: Auth | null | undefined;
 
   return {
     auth: Effect.gen(function* () {
-      if (authCache === null)
-        return yield* Effect.fail(new UnauthorizedError());
+      if (authCache === null) return yield* Effect.fail(new UnauthorizedError());
       if (authCache) return authCache;
       //   startTime(c, "auth.getSession");
       const session = yield* Effect.orElseSucceed(

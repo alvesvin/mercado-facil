@@ -1,14 +1,14 @@
 {
-    "name": "@mercado-facil/errors",
-    "type": "module",
-    "scripts": {
-        "build": "tsc"
-    },
-    "dependencies": {
-        "drizzle-orm": "^1.0.0-beta.15-859cf75",
-        "effect": "^3.19.19"
-    },
-    "devDependencies": {
-        "@mercado-facil/typescript-config": "workspace:*"
-    }
+  "name": "@mercado-facil/errors",
+  "type": "module",
+  "scripts": {
+    "build": "tsc"
+  },
+  "dependencies": {
+    "drizzle-orm": "^1.0.0-beta.15-859cf75",
+    "effect": "^3.19.19"
+  },
+  "devDependencies": {
+    "@mercado-facil/typescript-config": "workspace:*"
+  }
 }

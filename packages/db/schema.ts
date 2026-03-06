@@ -1,26 +1,21 @@
 import { isNull, sql } from "drizzle-orm";
 import {
-  pgTable,
-  text,
-  uuid,
-  timestamp,
   bigint,
   boolean,
-  index,
-  jsonb,
-  integer,
-  varchar,
-  check,
-  pgView,
-  customType,
+  decimal,
   geometry,
+  index,
+  integer,
+  jsonb,
   pgEnum,
+  pgTable,
+  text,
+  timestamp,
+  uuid,
 } from "drizzle-orm/pg-core";
 
 const COMMON_FIELDS = {
-  id: uuid("id")
-    .primaryKey()
-    .default(sql`uuidv7()`),
+  id: uuid("id").primaryKey().default(sql`uuid_generate_v4()`),
   deletedAt: timestamp("deleted_at"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at")
@@ -104,7 +99,7 @@ export const storeTable = pgTable(
     phone: text("phone"),
     email: text("email"),
   },
-  (t) => [index("location_index").using("gist", t.location)],
+  (t) => [index("location_index").using("gist", t.location).where(isNull(t.deletedAt))],
 );
 
 export const brandTable = pgTable("brand", {
@@ -112,6 +107,18 @@ export const brandTable = pgTable("brand", {
   id: text("id").notNull().primaryKey(),
   name: text("name").notNull(),
 });
+
+export const quantityUnitEnum = pgEnum("quantity_unit", [
+  "unit",
+  "kg",
+  "g",
+  "mg",
+  "lb",
+  "oz",
+  "ml",
+  "l",
+  "gal",
+]);
 
 export const productTable = pgTable("product", {
   ...COMMON_FIELDS,
@@ -122,11 +129,32 @@ export const productTable = pgTable("product", {
   }),
   flavor: text("flavor"),
   category: text("category"),
-  quantity: integer("quantity").notNull(),
-  quantityUnit: text("quantity_unit").notNull(),
+  quantity: decimal("quantity", { precision: 10, scale: 2 }).notNull(),
+  quantityUnit: quantityUnitEnum("quantity_unit").notNull(),
   subCategory: text("sub_category"),
   description: text("description"),
 });
+
+export const productMediaType = pgEnum("product_media_type", ["image"]);
+export const productMediaTheme = pgEnum("product_media_theme", ["light", "dark"]);
+export const productMediaTag = pgEnum("product_media_tag", ["user-generated", "promo"]);
+
+export const productMediaTable = pgTable(
+  "product_media",
+  {
+    ...COMMON_FIELDS,
+    productId: uuid("product_id")
+      .notNull()
+      .references(() => productTable.id, { onDelete: "cascade" }),
+    tags: productMediaTag("tags").array(),
+    mediaType: productMediaType("media_type").notNull(),
+    objectId: text("object_id").notNull(),
+    theme: productMediaTheme("theme"),
+  },
+  (table) => [
+    index("product_media_product_id_idx").on(table.productId).where(isNull(table.deletedAt)),
+  ],
+);
 
 export const priceTypeEnum = pgEnum("price_type", ["unit", "per_kg", "per_l"]);
 
@@ -143,14 +171,14 @@ export const priceTable = pgTable(
     storeId: uuid("store_id").references(() => storeTable.id, {
       onDelete: "set null",
     }),
-    price: bigint("price", { mode: "number" }).notNull(),
+    price: decimal("price", { precision: 10, scale: 2, mode: "number" }).notNull(),
+    price2: decimal("price_2", { precision: 10, scale: 2, mode: "number" }),
+    price2Qty: integer("price_2_qty"),
     currency: text("currency").notNull().default("BRL"),
     type: priceTypeEnum("type").notNull(),
   },
   (table) => [
-    index("price_product_id_idx")
-      .on(table.productId, table.storeId)
-      .where(isNull(table.deletedAt)),
+    index("price_product_id_idx").on(table.productId, table.storeId).where(isNull(table.deletedAt)),
   ],
 );
 
@@ -191,42 +219,38 @@ export const cartItemTable = pgTable(
   (table) => [index("cart_item_cart_id_idx").on(table.cartId)],
 );
 
-// PostGis
-export const spatialRefSys = pgTable(
-  "spatial_ref_sys",
-  {
-    srid: integer().primaryKey(),
-    authName: varchar("auth_name", { length: 256 }),
-    authSrid: integer("auth_srid"),
-    srtext: varchar({ length: 2048 }),
-    proj4text: varchar({ length: 2048 }),
-  },
-  (table) => [
-    check("spatial_ref_sys_srid_check", sql`((srid > 0) AND (srid <= 998999))`),
-  ],
-);
-export const geographyColumns = pgView("geography_columns", {
-  fTableCatalog: customType({ dataType: () => "name" })("f_table_catalog"),
-  fTableSchema: customType({ dataType: () => "name" })("f_table_schema"),
-  fTableName: customType({ dataType: () => "name" })("f_table_name"),
-  fGeographyColumn: customType({ dataType: () => "name" })(
-    "f_geography_column",
-  ),
-  coordDimension: integer("coord_dimension"),
-  srid: integer(),
-  type: text(),
-}).as(
-  sql`SELECT current_database() AS f_table_catalog, n.nspname AS f_table_schema, c.relname AS f_table_name, a.attname AS f_geography_column, postgis_typmod_dims(a.atttypmod) AS coord_dimension, postgis_typmod_srid(a.atttypmod) AS srid, postgis_typmod_type(a.atttypmod) AS type FROM pg_class c, pg_attribute a, pg_type t, pg_namespace n WHERE t.typname = 'geography'::name AND a.attisdropped = false AND a.atttypid = t.oid AND a.attrelid = c.oid AND c.relnamespace = n.oid AND (c.relkind = ANY (ARRAY['r'::"char", 'v'::"char", 'm'::"char", 'f'::"char", 'p'::"char"])) AND NOT pg_is_other_temp_schema(c.relnamespace) AND has_table_privilege(c.oid, 'SELECT'::text)`,
-);
+// // PostGis
+// export const spatialRefSys = pgTable(
+//   "spatial_ref_sys",
+//   {
+//     srid: integer().primaryKey(),
+//     authName: varchar("auth_name", { length: 256 }),
+//     authSrid: integer("auth_srid"),
+//     srtext: varchar({ length: 2048 }),
+//     proj4text: varchar({ length: 2048 }),
+//   },
+//   (table) => [check("spatial_ref_sys_srid_check", sql`((srid > 0) AND (srid <= 998999))`)],
+// );
+// export const geographyColumns = pgView("geography_columns", {
+//   fTableCatalog: customType({ dataType: () => "name" })("f_table_catalog"),
+//   fTableSchema: customType({ dataType: () => "name" })("f_table_schema"),
+//   fTableName: customType({ dataType: () => "name" })("f_table_name"),
+//   fGeographyColumn: customType({ dataType: () => "name" })("f_geography_column"),
+//   coordDimension: integer("coord_dimension"),
+//   srid: integer(),
+//   type: text(),
+// }).as(
+//   sql`SELECT current_database() AS f_table_catalog, n.nspname AS f_table_schema, c.relname AS f_table_name, a.attname AS f_geography_column, postgis_typmod_dims(a.atttypmod) AS coord_dimension, postgis_typmod_srid(a.atttypmod) AS srid, postgis_typmod_type(a.atttypmod) AS type FROM pg_class c, pg_attribute a, pg_type t, pg_namespace n WHERE t.typname = 'geography'::name AND a.attisdropped = false AND a.atttypid = t.oid AND a.attrelid = c.oid AND c.relnamespace = n.oid AND (c.relkind = ANY (ARRAY['r'::"char", 'v'::"char", 'm'::"char", 'f'::"char", 'p'::"char"])) AND NOT pg_is_other_temp_schema(c.relnamespace) AND has_table_privilege(c.oid, 'SELECT'::text)`,
+// );
 
-export const geometryColumns = pgView("geometry_columns", {
-  fTableCatalog: varchar("f_table_catalog", { length: 256 }),
-  fTableSchema: customType({ dataType: () => "name" })("f_table_schema"),
-  fTableName: customType({ dataType: () => "name" })("f_table_name"),
-  fGeometryColumn: customType({ dataType: () => "name" })("f_geometry_column"),
-  coordDimension: integer("coord_dimension"),
-  srid: integer(),
-  type: varchar({ length: 30 }),
-}).as(
-  sql`SELECT current_database()::character varying(256) AS f_table_catalog, n.nspname AS f_table_schema, c.relname AS f_table_name, a.attname AS f_geometry_column, COALESCE(postgis_typmod_dims(a.atttypmod), sn.ndims, 2) AS coord_dimension, COALESCE(NULLIF(postgis_typmod_srid(a.atttypmod), 0), sr.srid, 0) AS srid, replace(replace(COALESCE(NULLIF(upper(postgis_typmod_type(a.atttypmod)), 'GEOMETRY'::text), st.type, 'GEOMETRY'::text), 'ZM'::text, ''::text), 'Z'::text, ''::text)::character varying(30) AS type FROM pg_class c JOIN pg_attribute a ON a.attrelid = c.oid AND NOT a.attisdropped JOIN pg_namespace n ON c.relnamespace = n.oid JOIN pg_type t ON a.atttypid = t.oid LEFT JOIN ( SELECT s.connamespace, s.conrelid, s.conkey, (regexp_match(s.consrc, 'geometrytype\(\w+\)\s*=\s*''(\w+)'''::text, 'i'::text))[1] AS type FROM ( SELECT pg_constraint.connamespace, pg_constraint.conrelid, pg_constraint.conkey, pg_get_constraintdef(pg_constraint.oid) AS consrc FROM pg_constraint) s WHERE s.consrc ~* 'geometrytype\(\w+\)\s*=\s*''\w+'''::text) st ON st.connamespace = n.oid AND st.conrelid = c.oid AND (a.attnum = ANY (st.conkey)) LEFT JOIN ( SELECT s.connamespace, s.conrelid, s.conkey, (regexp_match(s.consrc, 'ndims\(\w+\)\s*=\s*(\d+)'::text, 'i'::text))[1]::integer AS ndims FROM ( SELECT pg_constraint.connamespace, pg_constraint.conrelid, pg_constraint.conkey, pg_get_constraintdef(pg_constraint.oid) AS consrc FROM pg_constraint) s WHERE s.consrc ~* 'ndims\(\w+\)\s*=\s*\d+'::text) sn ON sn.connamespace = n.oid AND sn.conrelid = c.oid AND (a.attnum = ANY (sn.conkey)) LEFT JOIN ( SELECT s.connamespace, s.conrelid, s.conkey, (regexp_match(s.consrc, 'srid\(\w+\)\s*=\s*(\d+)'::text, 'i'::text))[1]::integer AS srid FROM ( SELECT pg_constraint.connamespace, pg_constraint.conrelid, pg_constraint.conkey, pg_get_constraintdef(pg_constraint.oid) AS consrc FROM pg_constraint) s WHERE s.consrc ~* 'srid\(\w+\)\s*=\s*\d+'::text) sr ON sr.connamespace = n.oid AND sr.conrelid = c.oid AND (a.attnum = ANY (sr.conkey)) WHERE (c.relkind = ANY (ARRAY['r'::"char", 'v'::"char", 'm'::"char", 'f'::"char", 'p'::"char"])) AND NOT c.relname = 'raster_columns'::name AND t.typname = 'geometry'::name AND NOT pg_is_other_temp_schema(c.relnamespace) AND has_table_privilege(c.oid, 'SELECT'::text)`,
-);
+// export const geometryColumns = pgView("geometry_columns", {
+//   fTableCatalog: varchar("f_table_catalog", { length: 256 }),
+//   fTableSchema: customType({ dataType: () => "name" })("f_table_schema"),
+//   fTableName: customType({ dataType: () => "name" })("f_table_name"),
+//   fGeometryColumn: customType({ dataType: () => "name" })("f_geometry_column"),
+//   coordDimension: integer("coord_dimension"),
+//   srid: integer(),
+//   type: varchar({ length: 30 }),
+// }).as(
+//   sql`SELECT current_database()::character varying(256) AS f_table_catalog, n.nspname AS f_table_schema, c.relname AS f_table_name, a.attname AS f_geometry_column, COALESCE(postgis_typmod_dims(a.atttypmod), sn.ndims, 2) AS coord_dimension, COALESCE(NULLIF(postgis_typmod_srid(a.atttypmod), 0), sr.srid, 0) AS srid, replace(replace(COALESCE(NULLIF(upper(postgis_typmod_type(a.atttypmod)), 'GEOMETRY'::text), st.type, 'GEOMETRY'::text), 'ZM'::text, ''::text), 'Z'::text, ''::text)::character varying(30) AS type FROM pg_class c JOIN pg_attribute a ON a.attrelid = c.oid AND NOT a.attisdropped JOIN pg_namespace n ON c.relnamespace = n.oid JOIN pg_type t ON a.atttypid = t.oid LEFT JOIN ( SELECT s.connamespace, s.conrelid, s.conkey, (regexp_match(s.consrc, 'geometrytype\(\w+\)\s*=\s*''(\w+)'''::text, 'i'::text))[1] AS type FROM ( SELECT pg_constraint.connamespace, pg_constraint.conrelid, pg_constraint.conkey, pg_get_constraintdef(pg_constraint.oid) AS consrc FROM pg_constraint) s WHERE s.consrc ~* 'geometrytype\(\w+\)\s*=\s*''\w+'''::text) st ON st.connamespace = n.oid AND st.conrelid = c.oid AND (a.attnum = ANY (st.conkey)) LEFT JOIN ( SELECT s.connamespace, s.conrelid, s.conkey, (regexp_match(s.consrc, 'ndims\(\w+\)\s*=\s*(\d+)'::text, 'i'::text))[1]::integer AS ndims FROM ( SELECT pg_constraint.connamespace, pg_constraint.conrelid, pg_constraint.conkey, pg_get_constraintdef(pg_constraint.oid) AS consrc FROM pg_constraint) s WHERE s.consrc ~* 'ndims\(\w+\)\s*=\s*\d+'::text) sn ON sn.connamespace = n.oid AND sn.conrelid = c.oid AND (a.attnum = ANY (sn.conkey)) LEFT JOIN ( SELECT s.connamespace, s.conrelid, s.conkey, (regexp_match(s.consrc, 'srid\(\w+\)\s*=\s*(\d+)'::text, 'i'::text))[1]::integer AS srid FROM ( SELECT pg_constraint.connamespace, pg_constraint.conrelid, pg_constraint.conkey, pg_get_constraintdef(pg_constraint.oid) AS consrc FROM pg_constraint) s WHERE s.consrc ~* 'srid\(\w+\)\s*=\s*\d+'::text) sr ON sr.connamespace = n.oid AND sr.conrelid = c.oid AND (a.attnum = ANY (sr.conkey)) WHERE (c.relkind = ANY (ARRAY['r'::"char", 'v'::"char", 'm'::"char", 'f'::"char", 'p'::"char"])) AND NOT c.relname = 'raster_columns'::name AND t.typname = 'geometry'::name AND NOT pg_is_other_temp_schema(c.relnamespace) AND has_table_privilege(c.oid, 'SELECT'::text)`,
+// );

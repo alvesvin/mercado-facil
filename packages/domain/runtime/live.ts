@@ -1,19 +1,20 @@
-import { ManagedRuntime, pipe } from "effect";
-import { Layer } from "effect";
-import { CartService } from "../features/cart/CartService";
-import { EventService } from "../features/event/EventService";
-import { CartRepository } from "../features/cart/CartRepository";
-import { EventRepository } from "../features/event/EventRepository";
-import { DB } from "@mercado-facil/db/service";
-import { StoreService } from "../features/store/StoreService";
-import { StoreRepository } from "../features/store/StoreRepository";
-import { ProductService } from "../features/product/ProductService";
-import { ProductRepository } from "../features/product/ProductRepository";
+import { Layer, ManagedRuntime, pipe } from "effect";
 import { AiService } from "../features/ai/AiService";
-import { PriceService } from "../features/price/PriceService";
-import { PriceRepository } from "../features/price/PriceRepository";
-import { BrandService } from "../features/brand/BrandService";
+import { BlobService } from "../features/blob/BlobService";
 import { BrandRepository } from "../features/brand/BrandRepository";
+import { BrandService } from "../features/brand/BrandService";
+import { CartRepository } from "../features/cart/CartRepository";
+import { CartService } from "../features/cart/CartService";
+import { EventRepository } from "../features/event/EventRepository";
+import { EventService } from "../features/event/EventService";
+import { PriceRepository } from "../features/price/PriceRepository";
+import { PriceService } from "../features/price/PriceService";
+import { ProductMediaRepository } from "../features/product/ProductMediaRepository";
+import { ProductMediaService } from "../features/product/ProductMediaService";
+import { ProductRepository } from "../features/product/ProductRepository";
+import { ProductService } from "../features/product/ProductService";
+import { StoreRepository } from "../features/store/StoreRepository";
+import { StoreService } from "../features/store/StoreService";
 
 export const LiveRuntime = ManagedRuntime.make(
   pipe(
@@ -25,6 +26,8 @@ export const LiveRuntime = ManagedRuntime.make(
       AiService.Default,
       PriceService.Default,
       BrandService.Default,
+      BlobService.Default,
+      ProductMediaService.Default,
     ),
     Layer.provide(
       Layer.mergeAll(
@@ -34,6 +37,7 @@ export const LiveRuntime = ManagedRuntime.make(
         ProductRepository.Default,
         PriceRepository.Default,
         BrandRepository.Default,
+        ProductMediaRepository.Default,
       ),
     ),
   ),

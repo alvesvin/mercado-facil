@@ -1,9 +1,9 @@
+import { DB } from "@mercado-facil/db/service";
 import { PriceService } from "@mercado-facil/domain/features/price/PriceService";
-import { procedure, router } from "../trpc";
+import { ZFindConsensusArgs } from "@mercado-facil/domain/features/price/types";
 import { LiveRuntime } from "@mercado-facil/domain/runtime/live";
 import { Effect } from "effect";
-import { ZFindConsensusArgs } from "@mercado-facil/domain/features/price/types";
-import { DB } from "@mercado-facil/db/service";
+import { procedure, router } from "../trpc";
 
 export const price = router({
   findConsensus: procedure.input(ZFindConsensusArgs).query(({ input }) =>

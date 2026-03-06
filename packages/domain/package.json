@@ -1,18 +1,20 @@
 {
-    "name": "@mercado-facil/domain",
-    "version": "0.0.0",
-    "type": "module",
-    "private": true,
-    "dependencies": {
-        "@ai-sdk/google": "^3.0.37",
-        "@mercado-facil/db": "workspace:*",
-        "@mercado-facil/errors": "workspace:*",
-        "ai": "^6.0.112",
-        "drizzle-orm": "^1.0.0-beta.15-859cf75",
-        "effect": "^3.19.19",
-        "zod": "^4.3.6"
-    },
-    "devDependencies": {
-        "@mercado-facil/typescript-config": "workspace:*"
-    }
+  "name": "@mercado-facil/domain",
+  "version": "0.0.0",
+  "type": "module",
+  "private": true,
+  "dependencies": {
+    "@ai-sdk/google": "^3.0.37",
+    "@mercado-facil/db": "workspace:*",
+    "@mercado-facil/errors": "workspace:*",
+    "@mercado-facil/supabase": "workspace:*",
+    "ai": "^6.0.112",
+    "drizzle-orm": "^1.0.0-beta.15-859cf75",
+    "effect": "^3.19.19",
+    "zod": "^4.3.6",
+    "zod-form-data": "^3.0.1"
+  },
+  "devDependencies": {
+    "@mercado-facil/typescript-config": "workspace:*"
+  }
 }

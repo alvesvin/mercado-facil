@@ -1,59 +1,38 @@
-import { Tabs, TabSlot, TabList, TabTrigger } from "expo-router/ui"
-import { useSafeAreaInsets } from "react-native-safe-area-context"
-import { Text } from "@/components/ui/text"
-import { Pressable, View } from "react-native"
-import { CameraIcon } from "phosphor-react-native"
-import { api } from "@/lib/api"
-import { useRouter } from "expo-router"
-import { Dimensions } from "react-native"
-import { Button } from "@/components/ui/button"
+import { useRouter } from "expo-router";
+import { TabList, TabSlot, Tabs, TabTrigger } from "expo-router/ui";
+import { CameraIcon } from "phosphor-react-native";
+import { View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { Button } from "@/components/ui/button";
+import { Icon } from "@/components/ui/icon";
+import { Text } from "@/components/ui/text";
 
-const { width } = Dimensions.get('screen')
+export default function TabsLayout() {
+  const router = useRouter();
+  const { bottom } = useSafeAreaInsets();
 
-export default function IndexStackLayout() {
-    const { bottom } = useSafeAreaInsets()
-    const router = useRouter()
+  return (
+    <Tabs>
+      <TabSlot />
+      <TabList className="" style={{ paddingBottom: bottom }}>
+        <TabTrigger name="index" href="/" className="flex-1">
+          <Text className="mx-auto">Home</Text>
+        </TabTrigger>
 
-    async function handleStartCart() {
-        const cart = await api.cart.start.mutate().catch(console.error)
-        if (!cart) return
+        <View className="items-center justify-center w-[64px]">
+          <Button
+            size="icon"
+            className="absolute size-[64px] rounded-full"
+            onPress={() => {
+              router.navigate("/cart/scan");
+            }}
+          >
+            <Icon as={CameraIcon} weight="fill" size={40} className="text-blue-500" />
+          </Button>
+        </View>
 
-        if (cart.storeId) {
-            router.navigate(`/cart/${cart.id}/scan`)
-        } else {
-            router.navigate(`/cart/${cart.id}/select-store`)
-        }
-    }
-
-    return (
-        <Tabs>
-            <TabSlot />
-            <TabList style={{ paddingBottom: bottom }} className="border-t bg-muted/20 h-20">
-                <TabTrigger name="index" href="/" style={{ width: width / 3 }} className="items-center justify-center">
-                    <Text>Home</Text>
-                </TabTrigger>
-
-                <Pressable onPress={handleStartCart} style={{ width: width / 3 }} className="items-center justify-center">
-                    {/* <View >
-                    </View> */}
-
-                    <View className="absolute size-20">
-                        <Button
-                            className="w-full h-full bg-background rounded-full items-center justify-center"
-                            size="icon"
-                            variant="ghost"
-                        >
-                            <CameraIcon weight='fill' size={40} color="blue" />
-                        </Button>
-                        <View className="-inset-1 -z-10 rounded-full absolute" style={{
-                            backgroundColor: 'linear-gradient(to bottom, red, blue)'
-                        }} />
-                    </View>
-
-                </Pressable>
-
-                <View style={{ width: width / 3 }} />
-            </TabList>
-        </Tabs>
-    )
+        <View className="flex-1"></View>
+      </TabList>
+    </Tabs>
+  );
 }

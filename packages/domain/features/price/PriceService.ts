@@ -1,6 +1,6 @@
 import { Effect } from "effect";
-import type { FindConsensusArgs } from "./types";
 import { PriceRepository } from "./PriceRepository";
+import type { FindConsensusArgs } from "./types";
 
 /**
  * Compute median of sorted numeric array
@@ -52,35 +52,32 @@ function removeOutliers(prices: number[]): number[] {
   return sorted.filter((p) => p >= lowerBound && p <= upperBound);
 }
 
-export class PriceService extends Effect.Service<PriceService>()(
-  "PriceService",
-  {
-    effect: Effect.gen(function* () {
-      const priceRepository = yield* PriceRepository;
+export class PriceService extends Effect.Service<PriceService>()("PriceService", {
+  effect: Effect.gen(function* () {
+    const priceRepository = yield* PriceRepository;
 
-      return {
-        create: priceRepository.create.bind(priceRepository),
+    return {
+      create: priceRepository.create.bind(priceRepository),
 
-        findConsensus: (args: FindConsensusArgs) =>
-          Effect.gen(function* () {
-            const prices = yield* priceRepository.search({
-              filters: args,
-              pagination: { limit: 20, page: 1 },
-            });
+      findConsensus: (args: FindConsensusArgs) =>
+        Effect.gen(function* () {
+          const prices = yield* priceRepository.search({
+            filters: args,
+            pagination: { limit: 20, page: 1 },
+          });
 
-            const priceNumbers = prices.map((price) => price.price);
+          const priceNumbers = prices.map((price) => price.price);
 
-            const filteredPrices = removeOutliers(priceNumbers);
+          const filteredPrices = removeOutliers(priceNumbers);
 
-            const consensusPrice = median(filteredPrices);
+          const consensusPrice = median(filteredPrices);
 
-            return {
-              price: consensusPrice,
-              samples: prices.length,
-              confidence: Math.min(prices.length / 20, 1),
-            };
-          }),
-      };
-    }),
-  },
-) {}
+          return {
+            price: consensusPrice,
+            samples: prices.length,
+            confidence: Math.min(prices.length / 20, 1),
+          };
+        }),
+    };
+  }),
+}) {}

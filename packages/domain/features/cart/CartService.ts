@@ -1,8 +1,8 @@
-import { Effect } from "effect";
-import { CartRepository } from "./CartRepository";
-import { RequestContext } from "../../services/RequestContext";
-import type { AddProductArgs } from "./types";
 import { ForbiddenError } from "@mercado-facil/errors";
+import { Effect } from "effect";
+import { RequestContext } from "../../services/RequestContext";
+import { CartRepository } from "./CartRepository";
+import type { AddProductArgs } from "./types";
 
 export class CartService extends Effect.Service<CartService>()("CartService", {
   effect: Effect.gen(function* () {
@@ -34,9 +34,7 @@ export class CartService extends Effect.Service<CartService>()("CartService", {
 
           if (cart.userId !== user.id) {
             return yield* Effect.fail(
-              new ForbiddenError(
-                "Você não tem permissão para adicionar produtos a este carrinho",
-              ),
+              new ForbiddenError("Você não tem permissão para adicionar produtos a este carrinho"),
             );
           }
 

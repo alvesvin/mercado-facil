@@ -1,7 +1,7 @@
+import { app as trpcApp } from "@mercado-facil/trpc/hono";
 import { Hono } from "hono";
 import { secureHeaders } from "hono/secure-headers";
 import { timing } from "hono/timing";
-import { app as trpcApp } from "@mercado-facil/trpc/hono";
 
 const app = new Hono();
 

@@ -13,6 +13,6 @@ export const ZFindNearArgs = z.object({
 export type FindNearArgs = z.infer<typeof ZFindNearArgs>;
 
 export const ZFindByIdArgs = z.object({
-  id: z.uuidv7(),
+  id: z.uuid(),
 });
 export type FindByIdArgs = z.infer<typeof ZFindByIdArgs>;

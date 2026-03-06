@@ -1,15 +1,14 @@
-import { LiveRuntime } from "@mercado-facil/domain/runtime/live";
-import { procedure, router } from "../trpc";
-import { Effect } from "effect";
-import { CartService } from "@mercado-facil/domain/features/cart/CartService";
-import { RequestContext } from "@mercado-facil/domain/services/RequestContext";
-import {
-  ZFindByIdArgs,
-  ZUpdateStoreArgs,
-} from "@mercado-facil/domain/features/cart/types";
-import { registerNewProductSaga } from "@mercado-facil/domain/sagas/registerNewProduct";
-import { ZRegisterNewProductSagaArgs } from "@mercado-facil/domain/sagas/registerNewProduct";
 import { DB } from "@mercado-facil/db/service";
+import { CartService } from "@mercado-facil/domain/features/cart/CartService";
+import { ZFindByIdArgs, ZUpdateStoreArgs } from "@mercado-facil/domain/features/cart/types";
+import { LiveRuntime } from "@mercado-facil/domain/runtime/live";
+import {
+  registerNewProductSaga,
+  ZRegisterNewProductSagaArgs,
+} from "@mercado-facil/domain/sagas/registerNewProduct";
+import { RequestContext } from "@mercado-facil/domain/services/RequestContext";
+import { Effect } from "effect";
+import { procedure, router } from "../trpc";
 
 export const cart = router({
   findById: procedure.input(ZFindByIdArgs).query(({ input }) =>
@@ -32,7 +31,7 @@ export const cart = router({
     ),
   ),
 
-  updateStore: procedure.input(ZUpdateStoreArgs).mutation(({ ctx, input }) =>
+  updateStore: procedure.input(ZUpdateStoreArgs).mutation(({ input }) =>
     LiveRuntime.runPromise(
       Effect.gen(function* () {
         const cartService = yield* CartService;

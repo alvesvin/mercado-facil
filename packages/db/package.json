@@ -1,17 +1,16 @@
 {
-    "name": "@mercado-facil/db",
-    "version": "0.0.0",
-    "type": "module",
-    "private": true,
-    "dependencies": {
-        "@effect/sql-pg": "^0.50.3",
-        "drizzle-orm": "^1.0.0-beta.15-859cf75",
-        "effect": "^3.19.19",
-        "pg": "^8.19.0"
-    },
-    "devDependencies": {
-        "@mercado-facil/typescript-config": "workspace:*",
-        "@types/pg": "^8.18.0",
-        "drizzle-kit": "^1.0.0-beta.15-859cf75"
-    }
+  "name": "@mercado-facil/db",
+  "version": "0.0.0",
+  "type": "module",
+  "private": true,
+  "dependencies": {
+    "@effect/sql-pg": "^0.50.3",
+    "drizzle-orm": "^1.0.0-beta.15-859cf75",
+    "effect": "^3.19.19",
+    "postgres": "^3.4.8"
+  },
+  "devDependencies": {
+    "@mercado-facil/typescript-config": "workspace:*",
+    "drizzle-kit": "^1.0.0-beta.15-859cf75"
+  }
 }

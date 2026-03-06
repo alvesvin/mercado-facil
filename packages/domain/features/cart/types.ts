@@ -1,5 +1,5 @@
+import type { cartTable } from "@mercado-facil/db/schema";
 import type { InferSelectModel } from "drizzle-orm";
-import { cartTable } from "@mercado-facil/db/schema";
 import { z } from "zod";
 
 export type Cart = InferSelectModel<typeof cartTable>;
@@ -24,14 +24,14 @@ export const ZUpdateStoreArgs = z.object({
 export type UpdateStoreArgs = z.infer<typeof ZUpdateStoreArgs>;
 
 export const ZFindByIdArgs = z.object({
-  id: z.uuidv7(),
+  id: z.uuid(),
 });
 export type FindByIdArgs = z.infer<typeof ZFindByIdArgs>;
 
 export const ZAddProductArgs = z.object({
-  cartId: z.uuidv7(),
-  productId: z.uuidv7(),
-  priceId: z.uuidv7(),
+  cartId: z.uuid(),
+  productId: z.uuid(),
+  priceId: z.uuid(),
   quantity: z.number().int().positive().default(1),
 });
 export type AddProductArgs = z.infer<typeof ZAddProductArgs>;

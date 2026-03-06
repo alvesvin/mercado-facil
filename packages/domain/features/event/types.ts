@@ -1,5 +1,5 @@
+import type { eventTable } from "@mercado-facil/db/schema";
 import type { InferInsertModel } from "drizzle-orm";
-import { eventTable } from "@mercado-facil/db/schema";
 
 type SerializableValue = string | number | boolean | null | SerializableObject;
 

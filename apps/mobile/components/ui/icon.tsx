@@ -1,7 +1,7 @@
-import { cn } from '@/lib/utils';
-import type { IconProps as PhosphorIconProps } from 'phosphor-react-native';
-import { cssInterop } from 'nativewind';
-import type { ComponentType } from 'react';
+import { cssInterop } from "nativewind";
+import type { IconProps as PhosphorIconProps } from "phosphor-react-native";
+import type { ComponentType } from "react";
+import { cn } from "@/lib/utils";
 
 type IconProps = PhosphorIconProps & {
   className?: string;
@@ -14,10 +14,10 @@ function IconImpl({ as: IconComponent, ...props }: IconProps) {
 
 cssInterop(IconImpl, {
   className: {
-    target: 'style',
+    target: "style",
     nativeStyleToProp: {
-      height: 'size',
-      width: 'size',
+      height: "size",
+      width: "size",
     },
   },
 });
@@ -46,7 +46,7 @@ function Icon({ as: IconComponent, className, size = 14, ...props }: IconProps) 
   return (
     <IconImpl
       as={IconComponent}
-      className={cn('text-foreground', className)}
+      className={cn("text-foreground", className)}
       size={size}
       {...props}
     />

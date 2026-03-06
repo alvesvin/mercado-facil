@@ -1,9 +1,10 @@
 import { router } from "../trpc";
-import { product } from "./product";
-import { cart } from "./cart";
-import { store } from "./store";
 import { ai } from "./ai";
+import { blob } from "./blob";
+import { cart } from "./cart";
 import { price } from "./price";
+import { product } from "./product";
+import { store } from "./store";
 
 export const appRouter = router({
   ai,
@@ -11,6 +12,7 @@ export const appRouter = router({
   store,
   product,
   price,
+  blob,
 });
 
 export type AppRouter = typeof appRouter;

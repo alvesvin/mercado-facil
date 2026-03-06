@@ -1,22 +1,16 @@
-import { randomUUIDv7 } from "bun";
-import type { Context } from "../context";
-import type {
-  MiddlewareFunction,
-  MiddlewareResult,
-} from "@trpc/server/unstable-core-do-not-import";
-import { Effect, Either } from "effect";
 import { EventService } from "@mercado-facil/domain/features/event/EventService";
 import { TRPCError } from "@trpc/server";
+import type { MiddlewareFunction } from "@trpc/server/unstable-core-do-not-import";
+import { Effect, Either } from "effect";
 
-type MiddlewareOptions = Parameters<
-  MiddlewareFunction<any, any, any, any, any>
->[0];
+// biome-ignore lint/suspicious/noExplicitAny: workaround
+type MiddlewareOptions = Parameters<MiddlewareFunction<any, any, any, any, any>>[0];
 
 export const wideEventsMiddleware = (opts: MiddlewareOptions) =>
   Effect.gen(function* () {
     const eventService = yield* EventService;
 
-    const eventId = randomUUIDv7();
+    const eventId = crypto.randomUUID();
     const ts = Date.now();
     const sampling = 1.0;
     let sampled = Math.random() < sampling;
@@ -52,9 +46,7 @@ export const wideEventsMiddleware = (opts: MiddlewareOptions) =>
           data: event,
         })
         .pipe(
-          Effect.catchAllCause((cause) =>
-            Effect.logError("Failed to create event", cause),
-          ),
+          Effect.catchAllCause((cause) => Effect.logError("Failed to create event", cause)),
           Effect.forkDaemon,
         );
     }

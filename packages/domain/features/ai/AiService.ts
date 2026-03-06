@@ -1,8 +1,8 @@
-import { Effect, Either } from "effect";
-import { generateText, Output } from "ai";
-import { ZAiProductInfo } from "./types";
-import type { GenerateProductInfoArgs } from "./types";
 import { google } from "@ai-sdk/google";
+import { generateText, Output } from "ai";
+import { Effect, Either } from "effect";
+import type { GenerateProductInfoArgs } from "./types";
+import { ZAiProductInfo } from "./types";
 
 export class AiService extends Effect.Service<AiService>()("AiService", {
   effect: Effect.gen(function* () {
@@ -47,7 +47,6 @@ O nome do produto deve conter no máximo 2 a 3 palavras.`,
           ).pipe(Effect.either);
 
           if (Either.isLeft(result)) {
-            console.error(result.left.error);
             return null;
           } else {
             return result.right.output;
