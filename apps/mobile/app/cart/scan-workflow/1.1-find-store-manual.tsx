@@ -58,7 +58,7 @@ export default function FindStoreManual() {
   return (
     <SafeAreaView className="flex-1 gap-y-4">
       <View className="px-6">
-        <Text variant="h1" className="text-center my-6">
+        <Text variant="h1" className="text-left my-6">
           Onde você está comprando?
         </Text>
 

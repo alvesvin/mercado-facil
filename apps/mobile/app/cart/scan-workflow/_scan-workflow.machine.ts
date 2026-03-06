@@ -4,7 +4,17 @@ import { api } from "@/lib/api";
 import { queryClient } from "@/lib/tanstack-query";
 
 type Cart = { id: string; storeId: string | null };
-type Product = { id: string; barcode: string };
+type Product = {
+  id: string;
+  barcode: string;
+  name?: string | null;
+  brand?: string | null;
+  flavor?: string | null;
+  quantity?: number | null;
+  quantityUnit?: "unit" | "kg" | "g" | "mg" | "l" | "ml" | "lb" | "oz" | "gal" | null;
+  category?: string | null;
+  subCategory?: string | null;
+};
 type Price = { value: number; currency: string; type: "unit" | "per_kg" | "per_l" };
 
 export type ScanWorkflowContext = {
@@ -19,8 +29,8 @@ export type ScanWorkflowEvents =
   | { type: "PRODUCT_FOUND"; product: Product; price: Price }
   | { type: "PRODUCT_NOT_FOUND"; barcode: string }
   | { type: "CANCELLED" }
-  | { type: "INFO_GOOD"; product: Product }
-  | { type: "INFO_BAD"; product: Product }
+  | { type: "INFO_GOOD"; product: Omit<Product, "id" | "barcode"> }
+  | { type: "INFO_BAD"; product: Omit<Product, "id" | "barcode"> | null }
   | { type: "PRICE_CONFIRMED"; price: Price }
   | { type: "PRICE_CANCELLED" };
 
@@ -29,8 +39,11 @@ const cartStartQueryKey = ["cart", "start", { type: "query" }];
 const handleStoreFound = assign<
   ScanWorkflowContext,
   ScanWorkflowEvents & { type: "STORE_FOUND" },
+  // biome-ignore lint/suspicious/noExplicitAny: xstate types
   any,
+  // biome-ignore lint/suspicious/noExplicitAny: xstate types
   any,
+  // biome-ignore lint/suspicious/noExplicitAny: xstate types
   any
 >({
   cart: ({ event, context }) => {
@@ -43,8 +56,11 @@ const handleStoreFound = assign<
 const handleInfoGood = assign<
   ScanWorkflowContext,
   ScanWorkflowEvents & { type: "INFO_GOOD" | "INFO_BAD" },
+  // biome-ignore lint/suspicious/noExplicitAny: xstate types
   any,
+  // biome-ignore lint/suspicious/noExplicitAny: xstate types
   any,
+  // biome-ignore lint/suspicious/noExplicitAny: xstate types
   any
 >({
   product: ({ event, context }) => ({ ...context.product!, ...event.product }),

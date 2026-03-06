@@ -6,7 +6,7 @@ import { ScanWorkflowActorContext } from "./_scan-workflow.machine";
 
 export default function ConfirmProductInfo() {
   const actorRef = ScanWorkflowActorContext.useActorRef();
-  const product = ScanWorkflowActorContext.useSelector((state) => state.context.product);
+  const product = ScanWorkflowActorContext.useSelector((state) => state.context.product)!;
 
   return (
     <SafeAreaView className="px-6 flex-1">
@@ -19,6 +19,7 @@ export default function ConfirmProductInfo() {
       <RegisterNewProductForm
         initialValues={{
           ...product,
+          name: product.name ?? undefined,
           brand: product.brand ?? undefined,
           quantity: product.quantity ?? undefined,
           quantityUnit: product.quantityUnit
@@ -35,8 +36,6 @@ export default function ConfirmProductInfo() {
               ...values,
               quantityUnit: values.quantityUnit.value,
             },
-            id: "",
-            barcode: "",
           });
         }}
       />

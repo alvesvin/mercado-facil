@@ -1,13 +1,20 @@
 import { useMutation } from "@tanstack/react-query";
 import { encode } from "base64-arraybuffer";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Pressable, StyleSheet, View } from "react-native";
 import Animated, {
   createAnimatedComponent,
+  FadeIn,
+  FadeInUp,
   FadeOut,
+  FadeOutUp,
+  interpolate,
   SlideInDown,
+  useAnimatedStyle,
   useSharedValue,
+  withRepeat,
   withSpring,
+  withTiming,
 } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 import {
@@ -23,6 +30,13 @@ import { ScanWorkflowActorContext } from "./_scan-workflow.machine";
 
 const AnimatedSafeAreaView = createAnimatedComponent(SafeAreaView);
 
+const loadingMessages = [
+  "Estamos trabalhando nisso",
+  "Logo mais estara pronto",
+  "Lendo os detalhes do produto",
+  "Organizando as informacoes para voce",
+];
+
 export default function TakeProductPhoto() {
   const actor = ScanWorkflowActorContext.useActorRef();
 
@@ -32,13 +46,40 @@ export default function TakeProductPhoto() {
 
   const [_photo, _setPhoto] = useState<PhotoFile>();
   const [isGeneratingProductInfo, setIsGeneratingProductInfo] = useState(false);
+  const [loadingMessageIndex, setLoadingMessageIndex] = useState(0);
 
   const buttonScale = useSharedValue(1);
+  const glowProgress = useSharedValue(0);
 
   const trpc = useTRPC();
   const { mutateAsync: generateProductInfo } = useMutation(
     trpc.ai.generateProductInfo.mutationOptions(),
   );
+
+  useEffect(() => {
+    if (!isGeneratingProductInfo) {
+      setLoadingMessageIndex(0);
+      glowProgress.value = 0;
+      return;
+    }
+
+    glowProgress.value = withRepeat(withTiming(1, { duration: 1800 }), -1, true);
+    const interval = setInterval(() => {
+      setLoadingMessageIndex((current) => (current + 1) % loadingMessages.length);
+    }, 2100);
+
+    return () => clearInterval(interval);
+  }, [glowProgress, isGeneratingProductInfo]);
+
+  const outerPulseStyle = useAnimatedStyle(() => ({
+    opacity: interpolate(glowProgress.value, [0, 1], [0.2, 0.45]),
+    transform: [{ scale: interpolate(glowProgress.value, [0, 1], [1, 1.18]) }],
+  }));
+
+  const innerPulseStyle = useAnimatedStyle(() => ({
+    opacity: interpolate(glowProgress.value, [0, 1], [0.45, 0.2]),
+    transform: [{ scale: interpolate(glowProgress.value, [0, 1], [0.92, 1.05]) }],
+  }));
 
   async function takePhoto() {
     setIsGeneratingProductInfo(true);
@@ -57,20 +98,12 @@ export default function TakeProductPhoto() {
       if (productInfo?.quantity && productInfo.quantityUnit) {
         actor.send({
           type: "INFO_GOOD",
-          product: {
-            ...productInfo,
-            id: "",
-            barcode: "",
-          },
+          product: productInfo,
         });
       } else {
         actor.send({
           type: "INFO_BAD",
-          product: {
-            ...productInfo,
-            id: "",
-            barcode: "",
-          },
+          product: productInfo,
         });
       }
     } finally {
@@ -140,9 +173,46 @@ export default function TakeProductPhoto() {
           entering={SlideInDown}
           exiting={FadeOut}
           style={StyleSheet.absoluteFill}
-          className="bg-background"
+          className="bg-background items-center justify-center px-6"
         >
-          <Text>Gerando informações do produto...</Text>
+          <View className="absolute left-10 top-24 size-28 rounded-full bg-primary/10" />
+          <View className="absolute right-8 top-40 size-16 rounded-full bg-emerald-500/10" />
+          <View className="absolute bottom-28 left-12 size-20 rounded-full bg-sky-500/10" />
+          <View className="absolute bottom-20 right-14 size-24 rounded-full bg-primary/5" />
+
+          <Animated.View
+            entering={FadeIn.duration(250)}
+            className="w-full max-w-[340px] rounded-[32px] border border-border/70 bg-card px-8 py-10 items-center shadow-lg shadow-black/10"
+          >
+            <View className="relative size-40 items-center justify-center">
+              <Animated.View
+                style={outerPulseStyle}
+                className="absolute size-40 rounded-full bg-primary/12"
+              />
+              <Animated.View
+                style={innerPulseStyle}
+                className="absolute size-28 rounded-full border border-primary/20 bg-primary/10"
+              />
+              <View className="size-20 items-center justify-center rounded-[28px] bg-primary">
+                <View className="size-10 rounded-full bg-white/20" />
+              </View>
+              <View className="absolute right-3 top-6 size-4 rounded-full bg-emerald-400" />
+              <View className="absolute bottom-5 left-4 size-3 rounded-full bg-sky-400" />
+            </View>
+
+            <View className="h-16 items-center justify-center self-stretch overflow-hidden">
+              <Animated.View
+                key={loadingMessages[loadingMessageIndex]}
+                entering={FadeInUp.duration(350)}
+                exiting={FadeOutUp.duration(250)}
+                className="absolute inset-0 items-center justify-center px-4"
+              >
+                <Text variant="h3" className="text-center text-balance">
+                  {loadingMessages[loadingMessageIndex]}
+                </Text>
+              </Animated.View>
+            </View>
+          </Animated.View>
         </AnimatedSafeAreaView>
       )}
     </>

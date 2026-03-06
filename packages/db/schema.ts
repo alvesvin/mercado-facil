@@ -89,6 +89,9 @@ export const storeTable = pgTable(
   "store",
   {
     ...COMMON_FIELDS,
+    addedBy: uuid("added_by").references(() => userTable.id, { onDelete: "set null" }),
+    approvedAt: timestamp("approved_at"),
+    approvedBy: uuid("approved_by").references(() => userTable.id, { onDelete: "set null" }),
     name: text("name").notNull(),
     address: text("address"),
     city: text("city"),
@@ -106,6 +109,9 @@ export const storeTable = pgTable(
     email: text("email"),
   },
   (t) => [
+    index("store_added_by_pending_idx")
+      .on(t.addedBy)
+      .where(sql`${t.deletedAt} is null and ${t.approvedAt} is null`),
     index("store_search_text_idx")
       .using("gin", t.searchText.op("gin_trgm_ops"))
       .where(isNull(t.deletedAt)),
@@ -142,7 +148,7 @@ export const productTable = pgTable("product", {
   }),
   flavor: text("flavor"),
   category: text("category"),
-  quantity: decimal("quantity", { precision: 10, scale: 2 }).notNull(),
+  quantity: decimal("quantity", { precision: 10, scale: 2, mode: "number" }).notNull(),
   quantityUnit: quantityUnitEnum("quantity_unit").notNull(),
   subCategory: text("sub_category"),
   description: text("description"),

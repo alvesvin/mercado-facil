@@ -2,6 +2,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRefreshOnFocus } from "@/components/hooks/useRefreshOnFocus";
+import NearbyStoreLoadingState from "@/components/NearbyStoreLoadingState";
 import { Button } from "@/components/ui/button";
 import { Text } from "@/components/ui/text";
 import { findNearbyStoreWithLocationQueryOptions } from "@/data/queries/findNearbyStoreWithLocation";
@@ -37,7 +38,7 @@ export default function FindNearByStore() {
   );
 
   // Since this is the first step, cart may not be available yet
-  if (!cart) return <Text>Loading...</Text>;
+  if (!cart) return <NearbyStoreLoadingState />;
 
   // 1. Cart has a store id, so we emit a STORE_FOUND event
   if (cart.storeId) {
@@ -45,7 +46,7 @@ export default function FindNearByStore() {
   }
 
   // 2. Cart does not have a store id, so we query for a nearby store
-  if (isLoadingStore || isRefetchingStore) return <Text>Loading...</Text>;
+  if (isLoadingStore || isRefetchingStore) return <NearbyStoreLoadingState />;
 
   // 3. If no store is found, we emit a STORE_NOT_FOUND event
   if (!store) return actor.send({ type: "STORE_NOT_FOUND" });
