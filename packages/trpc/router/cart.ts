@@ -21,7 +21,7 @@ export const cart = router({
     ),
   ),
 
-  start: procedure.mutation(({ ctx }) =>
+  start: procedure.query(({ ctx }) =>
     LiveRuntime.runPromise(
       Effect.gen(function* () {
         const cartService = yield* CartService;

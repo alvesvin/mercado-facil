@@ -23,6 +23,7 @@ export default function RootLayout() {
   useEffect(() => {
     // biome-ignore lint/suspicious/noConsole: testing
     auth.signIn.anonymous().then(console.log).catch(console.error);
+    // router.navigate("/_sitemap");
   }, []);
 
   return (

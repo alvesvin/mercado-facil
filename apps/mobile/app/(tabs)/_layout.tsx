@@ -24,7 +24,7 @@ export default function TabsLayout() {
             size="icon"
             className="absolute size-[64px] rounded-full"
             onPress={() => {
-              router.navigate("/cart/scan");
+              router.navigate("/cart/scan-workflow/1-find-nearby-store");
             }}
           >
             <Icon as={CameraIcon} weight="fill" size={40} className="text-blue-500" />

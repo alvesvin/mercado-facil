@@ -2,18 +2,17 @@ import { useEffect, useRef, useState } from "react";
 import { TextInput, View } from "react-native";
 import CurrencyInput from "react-native-currency-input";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { ProductScanMachineContext } from "./ProductScanMachineContext";
-import { Badge } from "./ui/badge";
-import { Button } from "./ui/button";
-import { Text } from "./ui/text";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Text } from "@/components/ui/text";
+import { ScanWorkflowActorContext } from "./_scan-workflow.machine";
 
-export function ConfirmPrice() {
+export default function ConfirmPrice() {
+  const actor = ScanWorkflowActorContext.useActorRef();
+  const price = ScanWorkflowActorContext.useSelector((state) => state.context.price);
+
   const inputRef = useRef<TextInput>(null);
-  const isNewProduct = ProductScanMachineContext.useSelector(
-    (state) => state.context.product.isNew,
-  );
-  const price = ProductScanMachineContext.useSelector((state) => state.context.price);
-  const actoreRef = ProductScanMachineContext.useActorRef();
+  const isNewProduct = false;
 
   const [value, setValue] = useState(price?.value ?? 0);
 
@@ -22,14 +21,18 @@ export function ConfirmPrice() {
   }, []);
 
   function onConfirm() {
-    actoreRef.send({
-      type: "product.price.confirmed",
+    actor.send({
+      type: "PRICE_CONFIRMED",
       price: {
         value,
         currency: "BRL",
         type: "unit",
       },
     });
+  }
+
+  function onCancel() {
+    actor.send({ type: "PRICE_CANCELLED" });
   }
 
   return (
@@ -64,7 +67,12 @@ export function ConfirmPrice() {
         />
       </View>
       <View className="w-full flex-row gap-6">
-        <Button size="lg" variant="ghost" className="border border-border flex-1">
+        <Button
+          onPress={onCancel}
+          size="lg"
+          variant="ghost"
+          className="border border-border flex-1"
+        >
           <Text>Cancelar</Text>
         </Button>
         <Button onPress={onConfirm} size="lg" variant="secondary" className="flex-1">

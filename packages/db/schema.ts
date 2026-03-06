@@ -1,4 +1,4 @@
-import { isNull, sql } from "drizzle-orm";
+import { isNull, type SQL, sql } from "drizzle-orm";
 import {
   bigint,
   boolean,
@@ -96,10 +96,23 @@ export const storeTable = pgTable(
     zip: text("zip"),
     country: text("country"),
     location: geometry("location", { type: "point", srid: 4326 }),
+    searchText: text("search_text")
+      .notNull()
+      .generatedAlwaysAs(
+        (): SQL =>
+          sql`lower(coalesce(${storeTable.name}, '') || ' ' || coalesce(${storeTable.address}, '') || ' ' || coalesce(${storeTable.city}, '') || ' ' || coalesce(${storeTable.state}, '') || ' ' || coalesce(${storeTable.zip}, '') || ' ' || coalesce(${storeTable.country}, ''))`,
+      ),
     phone: text("phone"),
     email: text("email"),
   },
-  (t) => [index("location_index").using("gist", t.location).where(isNull(t.deletedAt))],
+  (t) => [
+    index("store_search_text_idx")
+      .using("gin", t.searchText.op("gin_trgm_ops"))
+      .where(isNull(t.deletedAt)),
+    index("location_index")
+      .using("gist", sql`(${t.location}::geography)`)
+      .where(isNull(t.deletedAt)),
+  ],
 );
 
 export const brandTable = pgTable("brand", {

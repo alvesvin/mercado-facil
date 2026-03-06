@@ -1,8 +1,11 @@
 import { z } from "zod";
 
-export type SearchStoreArgs = {
-  query: string;
-};
+export const ZSearchStoreArgs = z.object({
+  latitude: z.number(),
+  longitude: z.number(),
+  query: z.string().trim().min(1),
+});
+export type SearchStoreArgs = z.infer<typeof ZSearchStoreArgs>;
 
 export const ZFindNearArgs = z.object({
   latitude: z.number(),

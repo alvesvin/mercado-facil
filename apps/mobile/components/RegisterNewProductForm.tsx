@@ -162,21 +162,21 @@ export function RegisterNewProductForm(props: Props) {
                         <SelectItem label="Unidade" value="unit">
                           Unidade
                         </SelectItem>
-                        <SelectItem label="Kilograma" value="kg">
+                        <SelectItem label="kg" value="kg">
                           Kilograma
                         </SelectItem>
-                        <SelectItem label="Grama" value="g">
+                        <SelectItem label="g" value="g">
                           Grama
                         </SelectItem>
-                        <SelectItem label="Miligrama" value="mg">
+                        <SelectItem label="mg" value="mg">
                           Miligrama
                         </SelectItem>
                         {/* <SelectItem label="Libra" value="lb">Libra</SelectItem>
                                     <SelectItem label="Onça" value="oz">Onça</SelectItem> */}
-                        <SelectItem label="Litro" value="l">
+                        <SelectItem label="l" value="l">
                           Litro
                         </SelectItem>
-                        <SelectItem label="Mililitro" value="ml">
+                        <SelectItem label="ml" value="ml">
                           Mililitro
                         </SelectItem>
                         {/* <SelectItem label="Galão" value="gal">Galão</SelectItem> */}
