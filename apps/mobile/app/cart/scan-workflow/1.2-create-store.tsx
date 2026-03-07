@@ -5,11 +5,11 @@ import { View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import z from "zod";
 import { useLocation } from "@/components/hooks/useLocation";
+import { ScanWorkflowActorContext } from "@/components/machines/scan-workflow.machine";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Text } from "@/components/ui/text";
 import { useTRPC } from "@/lib/trpc";
-import { ScanWorkflowActorContext } from "./_scan-workflow.machine";
 
 const ZCreateStoreFormSchema = z.object({
   name: z.string().min(3),

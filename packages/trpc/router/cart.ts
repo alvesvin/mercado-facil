@@ -1,6 +1,10 @@
 import { DB } from "@mercado-facil/db/service";
 import { CartService } from "@mercado-facil/domain/features/cart/CartService";
-import { ZFindByIdArgs, ZUpdateStoreArgs } from "@mercado-facil/domain/features/cart/types";
+import {
+  ZCreateCartItemArgs,
+  ZFindByIdArgs,
+  ZUpdateStoreArgs,
+} from "@mercado-facil/domain/features/cart/types";
 import { LiveRuntime } from "@mercado-facil/domain/runtime/live";
 import {
   registerNewProductSaga,
@@ -55,4 +59,14 @@ export const cart = router({
         ),
       ),
     ),
+
+  addProduct: procedure.input(ZCreateCartItemArgs).mutation(({ input, ctx }) =>
+    LiveRuntime.runPromise(
+      Effect.gen(function* () {
+        const cartService = yield* CartService;
+        const cartItem = yield* cartService.addProduct(input);
+        return cartItem;
+      }).pipe(Effect.provide(RequestContext.Default(ctx)), Effect.provide(DB)),
+    ),
+  ),
 });

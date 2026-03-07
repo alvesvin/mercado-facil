@@ -61,21 +61,37 @@ export class PriceService extends Effect.Service<PriceService>()("PriceService",
 
       findConsensus: (args: FindConsensusArgs) =>
         Effect.gen(function* () {
-          const prices = yield* priceRepository.search({
-            filters: args,
-            pagination: { limit: 20, page: 1 },
-          });
+          const [unitPrices, perKgPrices, perLPrices] = yield* Effect.all([
+            priceRepository.search({
+              filters: { ...args, type: "unit" },
+              pagination: { limit: 20, page: 1 },
+            }),
+            priceRepository.search({
+              filters: { ...args, type: "per_kg" },
+              pagination: { limit: 20, page: 1 },
+            }),
+            priceRepository.search({
+              filters: { ...args, type: "per_l" },
+              pagination: { limit: 20, page: 1 },
+            }),
+          ]);
 
-          const priceNumbers = prices.map((price) => price.price);
+          const getConsensus = (prices: typeof unitPrices) => {
+            const priceNumbers = prices.map((price) => price.price);
+            const filteredPrices = removeOutliers(priceNumbers);
+            const consensusPrice = median(filteredPrices);
+            const price = prices.find((price) => price.price === consensusPrice);
+            return price;
+          };
 
-          const filteredPrices = removeOutliers(priceNumbers);
-
-          const consensusPrice = median(filteredPrices);
+          const unitConsensus = getConsensus(unitPrices);
+          const perKgConsensus = getConsensus(perKgPrices);
+          const perLConsensus = getConsensus(perLPrices);
 
           return {
-            price: consensusPrice,
-            samples: prices.length,
-            confidence: Math.min(prices.length / 20, 1),
+            unit: unitConsensus,
+            per_kg: perKgConsensus,
+            per_l: perLConsensus,
           };
         }),
     };

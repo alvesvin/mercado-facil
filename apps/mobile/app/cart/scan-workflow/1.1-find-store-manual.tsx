@@ -5,6 +5,7 @@ import { ShoppingCartIcon } from "phosphor-react-native";
 import { Pressable, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useLocation } from "@/components/hooks/useLocation";
+import { ScanWorkflowActorContext } from "@/components/machines/scan-workflow.machine";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Icon } from "@/components/ui/icon";
@@ -12,7 +13,6 @@ import { Input } from "@/components/ui/input";
 import { Text } from "@/components/ui/text";
 import { useTRPC } from "@/lib/trpc";
 import { formatDistance } from "@/lib/utils";
-import { ScanWorkflowActorContext } from "./_scan-workflow.machine";
 
 type Store = {
   id: string;

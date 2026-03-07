@@ -2,19 +2,19 @@ import { useEffect, useRef, useState } from "react";
 import { TextInput, View } from "react-native";
 import CurrencyInput from "react-native-currency-input";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { ScanWorkflowActorContext } from "@/components/machines/scan-workflow.machine";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Text } from "@/components/ui/text";
-import { ScanWorkflowActorContext } from "./_scan-workflow.machine";
 
 export default function ConfirmPrice() {
   const actor = ScanWorkflowActorContext.useActorRef();
-  const price = ScanWorkflowActorContext.useSelector((state) => state.context.price);
+  const prices = ScanWorkflowActorContext.useSelector((state) => state.context.prices);
 
   const inputRef = useRef<TextInput>(null);
   const isNewProduct = false;
 
-  const [value, setValue] = useState(price?.value ?? 0);
+  const [value, setValue] = useState(prices.unit?.price ?? 0);
 
   useEffect(() => {
     inputRef.current?.focus();
@@ -23,8 +23,10 @@ export default function ConfirmPrice() {
   function onConfirm() {
     actor.send({
       type: "PRICE_CONFIRMED",
+      // TODO: handle new price vs accepted price logic
       price: {
-        value,
+        id: isNewProduct ? "" : prices.unit!.id,
+        price: value,
         currency: "BRL",
         type: "unit",
       },
@@ -75,7 +77,7 @@ export default function ConfirmPrice() {
         >
           <Text>Cancelar</Text>
         </Button>
-        <Button onPress={onConfirm} size="lg" variant="secondary" className="flex-1">
+        <Button onPress={onConfirm} size="lg" className="flex-1">
           <Text>Confirmar</Text>
         </Button>
       </View>

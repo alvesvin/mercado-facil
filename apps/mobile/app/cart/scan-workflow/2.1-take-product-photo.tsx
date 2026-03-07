@@ -23,10 +23,10 @@ import {
   useCameraDevice,
   useCameraPermission,
 } from "react-native-vision-camera";
+import { ScanWorkflowActorContext } from "@/components/machines/scan-workflow.machine";
 import ScanCameraState from "@/components/ScanCameraState";
 import { Text } from "@/components/ui/text";
 import { useTRPC } from "@/lib/trpc";
-import { ScanWorkflowActorContext } from "./_scan-workflow.machine";
 
 const AnimatedSafeAreaView = createAnimatedComponent(SafeAreaView);
 
@@ -91,6 +91,9 @@ export default function TakeProductPhoto() {
       const result = await fetch(`file://${file.path}`);
       const base64 = encode(await result.arrayBuffer());
 
+      // TODO: get the right mime type from the file
+      actor.send({ type: "PHOTO_TAKEN", photo: { base64, mimeType: "image/jpeg" } });
+
       const productInfo = await generateProductInfo({
         images: [{ base64, mime: "image/jpeg" }],
       });
@@ -101,10 +104,7 @@ export default function TakeProductPhoto() {
           product: productInfo,
         });
       } else {
-        actor.send({
-          type: "INFO_BAD",
-          product: productInfo,
-        });
+        actor.send({ type: "INFO_BAD", product: productInfo });
       }
     } finally {
       setIsGeneratingProductInfo(false);
@@ -150,7 +150,7 @@ export default function TakeProductPhoto() {
           photoQualityBalance="speed"
         />
         <View className="bg-black/50 p-4 w-[250px] mx-auto mt-[10vh] rounded-lg">
-          <Text variant="h3" className="text-center text-balance">
+          <Text variant="h3" className="text-center text-balance text-white">
             Tire uma foto do produto de frente
           </Text>
         </View>

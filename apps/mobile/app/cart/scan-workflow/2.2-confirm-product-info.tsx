@@ -1,8 +1,8 @@
 import { View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { ScanWorkflowActorContext } from "@/components/machines/scan-workflow.machine";
 import { RegisterNewProductForm } from "@/components/RegisterNewProductForm";
 import { Text } from "@/components/ui/text";
-import { ScanWorkflowActorContext } from "./_scan-workflow.machine";
 
 export default function ConfirmProductInfo() {
   const actorRef = ScanWorkflowActorContext.useActorRef();

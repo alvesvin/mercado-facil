@@ -1,15 +1,10 @@
-import { cartItemTable, cartTable } from "@mercado-facil/db/schema";
+import { cartTable } from "@mercado-facil/db/schema";
 import { IDB } from "@mercado-facil/db/service";
 import { ResourceNotFoundError } from "@mercado-facil/errors";
 import { and, desc, eq, gte, isNull } from "drizzle-orm";
 import { Effect } from "effect";
 import type { FindByIdArgs } from "../store/types";
-import type {
-  AddProductArgs,
-  CreateCartArgs,
-  GetActiveByUserIdArgs,
-  UpdateStoreArgs,
-} from "./types";
+import type { CreateCartArgs, GetActiveByUserIdArgs, UpdateStoreArgs } from "./types";
 
 export class CartRepository extends Effect.Service<CartRepository>()("CartRepository", {
   effect: Effect.gen(function* () {
@@ -62,12 +57,6 @@ export class CartRepository extends Effect.Service<CartRepository>()("CartReposi
           if (!cart)
             return yield* Effect.fail(new ResourceNotFoundError("Carrinho não encontrado"));
           return cart;
-        }),
-
-      addProduct: (args: AddProductArgs) =>
-        Effect.gen(function* () {
-          const db = yield* IDB;
-          return (yield* db.insert(cartItemTable).values(args).returning())[0]!;
         }),
     };
   }),

@@ -2,12 +2,12 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRefreshOnFocus } from "@/components/hooks/useRefreshOnFocus";
+import { ScanWorkflowActorContext } from "@/components/machines/scan-workflow.machine";
 import NearbyStoreLoadingState from "@/components/NearbyStoreLoadingState";
 import { Button } from "@/components/ui/button";
 import { Text } from "@/components/ui/text";
 import { findNearbyStoreWithLocationQueryOptions } from "@/data/queries/findNearbyStoreWithLocation";
 import { useTRPC } from "@/lib/trpc";
-import { ScanWorkflowActorContext } from "./_scan-workflow.machine";
 
 /**
  * This checks cart state and routes accordingly.

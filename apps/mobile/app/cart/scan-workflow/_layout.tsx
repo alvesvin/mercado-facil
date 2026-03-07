@@ -1,7 +1,7 @@
 import { type Href, router, Stack, usePathname } from "expo-router";
-import { useEffect, useEffectEvent } from "react";
+import { useEffect, useEffectEvent, useRef } from "react";
 import { scheduleOnRN } from "react-native-worklets";
-import { ScanWorkflowActorContext } from "./_scan-workflow.machine";
+import { ScanWorkflowActorContext } from "@/components/machines/scan-workflow.machine";
 
 export default function CartScanWorkflowLayout() {
   return (
@@ -14,15 +14,24 @@ export default function CartScanWorkflowLayout() {
 function CartScanWorkflowLayoutContent() {
   const actor = ScanWorkflowActorContext.useActorRef();
   const path = usePathname();
+  const currentPath = useRef(path);
 
   const subscribe = useEffectEvent(() => {
     function safeReplace(target: Href) {
-      if (target === path) return;
+      if (target === currentPath.current) return;
+      currentPath.current = target.toString();
       // This is an attempt to fix "cannot update a component while rendering a different component"
       scheduleOnRN(() => router.replace(target));
     }
 
     return actor.subscribe((state) => {
+      if (state.matches("cancelled")) {
+        if (router.canGoBack()) {
+          router.back();
+        } else {
+          safeReplace("/(tabs)");
+        }
+      }
       if (state.matches("findNearbyStore")) {
         safeReplace("/cart/scan-workflow/1-find-nearby-store");
       }

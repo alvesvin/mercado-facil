@@ -19,13 +19,13 @@ export const getProductWithPriceByBarcodeSaga = (args: GetProductWithPriceByBarc
       const priceService = yield* PriceService;
       const product = yield* productService.findByBarcode({ barcode: args.barcode });
       if (!product) return null;
-      const price = yield* priceService.findConsensus({
+      const prices = yield* priceService.findConsensus({
         productId: product.id,
         storeId: args.storeId,
       });
       return {
         product,
-        price,
+        prices,
       };
     }),
   );

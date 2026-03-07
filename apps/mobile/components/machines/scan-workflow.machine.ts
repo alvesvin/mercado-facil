@@ -15,21 +15,28 @@ type Product = {
   category?: string | null;
   subCategory?: string | null;
 };
-type Price = { value: number; currency: string; type: "unit" | "per_kg" | "per_l" };
+type Price = { id: string; price: number; currency: string; type: "unit" | "per_kg" | "per_l" };
+type Prices = {
+  unit?: Price;
+  per_kg?: Price;
+  per_l?: Price;
+};
 
 export type ScanWorkflowContext = {
   cart?: Cart;
   product?: Product & { isNew: boolean };
-  price?: Price;
+  photo?: { base64: string; mimeType: string };
+  prices: Prices;
 };
 
 export type ScanWorkflowEvents =
   | { type: "STORE_FOUND"; store: { id: string } }
   | { type: "STORE_NOT_FOUND" }
-  | { type: "PRODUCT_FOUND"; product: Product; price: Price }
+  | { type: "PRODUCT_FOUND"; product: Product; prices: Prices }
   | { type: "PRODUCT_NOT_FOUND"; barcode: string }
   | { type: "CANCELLED" }
   | { type: "INFO_GOOD"; product: Omit<Product, "id" | "barcode"> }
+  | { type: "PHOTO_TAKEN"; photo: { base64: string; mimeType: string } }
   | { type: "INFO_BAD"; product: Omit<Product, "id" | "barcode"> | null }
   | { type: "PRICE_CONFIRMED"; price: Price }
   | { type: "PRICE_CANCELLED" };
@@ -53,7 +60,7 @@ const handleStoreFound = assign<
   },
 });
 
-const handleInfoGood = assign<
+const handleInfoGoodBad = assign<
   ScanWorkflowContext,
   ScanWorkflowEvents & { type: "INFO_GOOD" | "INFO_BAD" },
   // biome-ignore lint/suspicious/noExplicitAny: xstate types
@@ -83,6 +90,7 @@ export const scanWorkflowMachine = setup({
   },
 }).createMachine({
   initial: "getCart",
+  context: { prices: {} },
   states: {
     getCart: {
       invoke: {
@@ -126,7 +134,7 @@ export const scanWorkflowMachine = setup({
           target: "confirmPrice",
           actions: assign({
             product: ({ event }) => ({ ...event.product, isNew: false }),
-            price: ({ event }) => event.price,
+            prices: ({ event }) => event.prices,
           }),
         },
         PRODUCT_NOT_FOUND: {
@@ -135,6 +143,7 @@ export const scanWorkflowMachine = setup({
             product: ({ event }) => ({ id: "", barcode: event.barcode, isNew: true }),
           }),
         },
+        CANCELLED: { target: "cancelled" },
       },
     },
 
@@ -142,27 +151,38 @@ export const scanWorkflowMachine = setup({
       on: {
         INFO_GOOD: {
           target: "confirmPrice",
-          actions: handleInfoGood,
+          actions: handleInfoGoodBad,
         },
-        INFO_BAD: { target: "newProductForm", actions: handleInfoGood },
+        INFO_BAD: { target: "newProductForm", actions: handleInfoGoodBad },
         CANCELLED: { target: "scan" },
+        PHOTO_TAKEN: { actions: assign({ photo: ({ event }) => event.photo }) },
       },
     },
 
     newProductForm: {
       on: {
-        INFO_GOOD: { target: "confirmPrice", actions: handleInfoGood },
+        INFO_GOOD: { target: "confirmPrice", actions: handleInfoGoodBad },
       },
     },
 
     confirmPrice: {
       on: {
-        PRICE_CONFIRMED: { target: "createProduct" },
+        PRICE_CONFIRMED: {
+          target: "createProduct",
+          actions: assign({
+            prices: ({ event, context }) => ({
+              ...context.prices,
+              [event.price.type]: event.price,
+            }),
+          }),
+        },
         PRICE_CANCELLED: { target: "scan" },
       },
     },
 
     createProduct: {},
+
+    cancelled: {},
   },
 });
 

@@ -3,6 +3,7 @@ import { AiService } from "../features/ai/AiService";
 import { BlobService } from "../features/blob/BlobService";
 import { BrandRepository } from "../features/brand/BrandRepository";
 import { BrandService } from "../features/brand/BrandService";
+import { CartItemRepository } from "../features/cart/CartItemRepository";
 import { CartRepository } from "../features/cart/CartRepository";
 import { CartService } from "../features/cart/CartService";
 import { EventRepository } from "../features/event/EventRepository";
@@ -38,6 +39,7 @@ export const LiveRuntime = ManagedRuntime.make(
         PriceRepository.Default,
         BrandRepository.Default,
         ProductMediaRepository.Default,
+        CartItemRepository.Default,
       ),
     ),
   ),

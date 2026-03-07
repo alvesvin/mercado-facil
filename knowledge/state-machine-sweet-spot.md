@@ -1,0 +1,1 @@
+State machines are cool, the sweet spot is to delegate state transition and context to xstate while components can manage data fetching and mutation.

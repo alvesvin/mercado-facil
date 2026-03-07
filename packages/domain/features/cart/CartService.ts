@@ -1,12 +1,14 @@
 import { ForbiddenError } from "@mercado-facil/errors";
 import { Effect } from "effect";
 import { RequestContext } from "../../services/RequestContext";
+import { CartItemRepository } from "./CartItemRepository";
 import { CartRepository } from "./CartRepository";
-import type { AddProductArgs } from "./types";
+import type { CreateCartItemArgs } from "./types";
 
 export class CartService extends Effect.Service<CartService>()("CartService", {
   effect: Effect.gen(function* () {
     const cartRepository = yield* CartRepository;
+    const cartItemRepository = yield* CartItemRepository;
 
     return {
       startCart: () =>
@@ -25,7 +27,7 @@ export class CartService extends Effect.Service<CartService>()("CartService", {
 
       findById: cartRepository.findById.bind(cartRepository),
 
-      addProduct: (args: AddProductArgs) =>
+      addProduct: (args: CreateCartItemArgs) =>
         Effect.gen(function* () {
           const ctx = yield* RequestContext;
           const { user } = yield* ctx.auth;
@@ -38,7 +40,7 @@ export class CartService extends Effect.Service<CartService>()("CartService", {
             );
           }
 
-          const cartItem = yield* cartRepository.addProduct(args);
+          const cartItem = yield* cartItemRepository.create(args);
 
           return cartItem;
         }),

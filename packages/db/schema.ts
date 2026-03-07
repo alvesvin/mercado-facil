@@ -11,6 +11,7 @@ import {
   pgTable,
   text,
   timestamp,
+  unique,
   uuid,
 } from "drizzle-orm/pg-core";
 
@@ -235,7 +236,10 @@ export const cartItemTable = pgTable(
     }),
     quantity: integer("quantity").notNull().default(1),
   },
-  (table) => [index("cart_item_cart_id_idx").on(table.cartId)],
+  (table) => [
+    index("cart_item_cart_id_idx").on(table.cartId),
+    unique("cart_item_product_id_idx").on(table.cartId, table.productId),
+  ],
 );
 
 // // PostGis

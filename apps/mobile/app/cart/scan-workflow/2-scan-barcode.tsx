@@ -10,12 +10,12 @@ import {
   useCameraPermission,
   useCodeScanner,
 } from "react-native-vision-camera";
+import { ScanWorkflowActorContext } from "@/components/machines/scan-workflow.machine";
 import ScanCameraState from "@/components/ScanCameraState";
 import ScannerOverlay from "@/components/ScannerOverlay";
 import { Button } from "@/components/ui/button";
 import { Text } from "@/components/ui/text";
 import { api } from "@/lib/api";
-import { ScanWorkflowActorContext } from "./_scan-workflow.machine";
 
 export default function ScanBarcode() {
   const actor = ScanWorkflowActorContext.useActorRef();
@@ -49,7 +49,7 @@ export default function ScanBarcode() {
         actor.send({
           type: "PRODUCT_FOUND",
           product: product.product,
-          price: { value: product.price.price, currency: "BRL", type: "unit" },
+          prices: product.prices,
         });
       } else {
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
@@ -63,6 +63,10 @@ export default function ScanBarcode() {
     codeTypes: ["ean-13"],
     onCodeScanned,
   });
+
+  function cancel() {
+    actor.send({ type: "CANCELLED" });
+  }
 
   if (!hasPermission) {
     return (
@@ -100,10 +104,18 @@ export default function ScanBarcode() {
         codeScanner={codeScanner}
       />
       <ScannerOverlay />
-      <Text variant="h3" className="text-center text-balance w-[250px] mx-auto mt-[10vh]">
+      <Text
+        variant="h3"
+        className="text-center text-balance w-[250px] mx-auto mt-[10vh] text-white"
+      >
         Aproxime a câmera do código de barras
       </Text>
-      <Button size="lg" variant="destructive" className="absolute bottom-0 mb-[20vh]">
+      <Button
+        onPress={cancel}
+        size="lg"
+        variant="destructive"
+        className="absolute bottom-0 mb-[20vh]"
+      >
         <Text>Cancelar</Text>
       </Button>
     </SafeAreaView>

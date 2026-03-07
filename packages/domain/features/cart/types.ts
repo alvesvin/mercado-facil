@@ -28,10 +28,10 @@ export const ZFindByIdArgs = z.object({
 });
 export type FindByIdArgs = z.infer<typeof ZFindByIdArgs>;
 
-export const ZAddProductArgs = z.object({
+export const ZCreateCartItemArgs = z.object({
   cartId: z.uuid(),
   productId: z.uuid(),
   priceId: z.uuid(),
   quantity: z.number().int().positive().default(1),
 });
-export type AddProductArgs = z.infer<typeof ZAddProductArgs>;
+export type CreateCartItemArgs = z.infer<typeof ZCreateCartItemArgs>;

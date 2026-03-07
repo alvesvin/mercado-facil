@@ -15,6 +15,8 @@ export const ZSearchPriceArgs = z.object({
     productId: z.uuid(),
     storeId: z.uuid().optional(),
     userId: z.uuid().optional(),
+    // TODO: unify these types
+    type: z.enum(["unit", "per_kg", "per_l"]),
   }),
   pagination: z.object({
     page: z.number().positive().default(1),
