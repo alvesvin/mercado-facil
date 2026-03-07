@@ -1,5 +1,4 @@
-import { drizzle } from "drizzle-orm/postgres-js";
-import postgres from "postgres";
+import { drizzle } from "drizzle-orm/node-postgres";
 import { accountTable, sessionTable, userTable, verificationTable } from "./schema";
 
 // For better auth
@@ -10,9 +9,4 @@ const schema = {
   verification: verificationTable,
 };
 
-// Disable prefetch as it is not supported for "Transaction" pool mode in Supabase
-const client = postgres(process.env.DATABASE_URL!, { prepare: false });
-export const db = drizzle({
-  client,
-  schema,
-});
+export const db = drizzle(process.env.DATABASE_URL!, { schema });

@@ -2,6 +2,7 @@
   "name": "@mercado-facil/api",
   "type": "module",
   "scripts": {
+    "start": "bun run src/index.ts",
     "dev": "bun run --hot src/index.ts",
     "db:push": "drizzle-kit push"
   },

@@ -8,4 +8,7 @@ const app = new Hono();
 app.use(secureHeaders(), timing());
 app.route("/", trpcApp);
 
-export default app;
+export default {
+  port: process.env.PORT ? parseInt(process.env.PORT, 10) : 3000,
+  fetch: app.fetch,
+};
