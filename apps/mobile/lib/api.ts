@@ -9,7 +9,7 @@ import {
 import { auth } from "./auth";
 
 const clientOptions = {
-  url: "http://192.168.1.35:3000/api/trpc",
+  url: `${process.env.EXPO_PUBLIC_API_URL}/api/trpc`,
   fetch: (url: URL | RequestInfo, options: RequestInit | undefined) => {
     const cookie = auth.getCookie();
     return fetch(url, {
