@@ -11,8 +11,9 @@ import { auth } from "@/lib/auth";
 import { queryClient } from "@/lib/tanstack-query";
 import { NAV_THEME } from "@/lib/theme";
 import { TRPCProvider } from "@/lib/trpc";
-import { PostHogProvider } from "posthog-react-native";
+import { PostHogErrorBoundary, PostHogProvider } from "posthog-react-native";
 import { posthog } from "@/lib/posthog";
+import AuthProvider from "@/components/AuthProvider";
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -34,15 +35,19 @@ export default function RootLayout() {
 
   return (
     <PostHogProvider client={posthog}>
-      <QueryClientProvider client={queryClient}>
-        <TRPCProvider queryClient={queryClient} trpcClient={api}>
-          <ThemeProvider value={NAV_THEME[colorScheme ?? "light"]}>
-            <StatusBar style={colorScheme === "dark" ? "light" : "dark"} />
-            <Stack screenOptions={{ headerShown: false }} />
-            <PortalHost />
-          </ThemeProvider>
-        </TRPCProvider>
-      </QueryClientProvider>
+      <PostHogErrorBoundary>
+        <AuthProvider>
+          <QueryClientProvider client={queryClient}>
+            <TRPCProvider queryClient={queryClient} trpcClient={api}>
+              <ThemeProvider value={NAV_THEME[colorScheme ?? "light"]}>
+                <StatusBar style={colorScheme === "dark" ? "light" : "dark"} />
+                <Stack screenOptions={{ headerShown: false }} />
+                <PortalHost />
+              </ThemeProvider>
+            </TRPCProvider>
+          </QueryClientProvider>
+        </AuthProvider>
+      </PostHogErrorBoundary>
     </PostHogProvider>
   );
 }

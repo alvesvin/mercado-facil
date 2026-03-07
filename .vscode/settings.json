@@ -1,3 +1,5 @@
 {
-  "typescript.experimental.useTsgo": true
+  "typescript.experimental.useTsgo": true,
+  "editor.indentSize": 2,
+  "editor.useTabStops": false
 }
