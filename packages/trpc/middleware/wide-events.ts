@@ -35,6 +35,10 @@ export const wideEventsMiddleware = (opts: MiddlewareOptions) =>
     ).pipe(Effect.either);
 
     if (Either.isLeft(result)) {
+      // biome-ignore lint/suspicious/noConsole: debugging
+      console.error(result.left.error);
+      // biome-ignore lint/suspicious/noConsole: debugging
+      console.error(result.left.cause);
       sampled = true;
     }
 

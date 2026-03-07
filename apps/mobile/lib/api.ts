@@ -7,9 +7,10 @@ import {
   splitLink,
 } from "@trpc/client";
 import { auth } from "./auth";
+import { config } from "./config";
 
 const clientOptions = {
-  url: `${process.env.EXPO_PUBLIC_API_URL}/api/trpc`,
+  url: `${config.EXPO_PUBLIC_API_URL}/api/trpc`,
   fetch: (url: URL | RequestInfo, options: RequestInit | undefined) => {
     const cookie = auth.getCookie();
     return fetch(url, {
