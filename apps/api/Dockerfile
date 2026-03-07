@@ -15,7 +15,7 @@ FROM base AS deps
 WORKDIR /app
 # First install the dependencies (as they change less often)
 COPY --from=prepare /app/out/ .
-RUN bun install --frozen-lockfile --production
+RUN bun install --production
 
 # ---
 FROM base AS runner
