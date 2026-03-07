@@ -18,9 +18,9 @@ export const ZCreateProductArgs = z.object({
 export type CreateProductArgs = z.infer<typeof ZCreateProductArgs>;
 
 export const ZCreateProductMediaArgs = z.object({
-  productId: z.uuid(),
+  productId: z.uuidv7(),
   mediaType: z.enum(["image"]),
-  objectId: z.uuid(),
+  objectId: z.uuidv7(),
   tags: z.array(z.enum(["user-generated", "promo"])).nullish(),
   theme: z.enum(["light", "dark"]).nullish(),
 });

@@ -11,8 +11,8 @@ import { StoreService } from "../features/store/StoreService";
 import { RequestContext } from "../services/RequestContext";
 
 export const ZRegisterNewProductSagaArgs = z.object({
-  cartId: z.uuid(),
-  storeId: z.uuid().nullish(),
+  cartId: z.uuidv7(),
+  storeId: z.uuidv7().nullish(),
   media: z.object({
     base64: z.base64(),
     mimeType: z.string().nullish(),

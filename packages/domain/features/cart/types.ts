@@ -24,14 +24,22 @@ export const ZUpdateStoreArgs = z.object({
 export type UpdateStoreArgs = z.infer<typeof ZUpdateStoreArgs>;
 
 export const ZFindByIdArgs = z.object({
-  id: z.uuid(),
+  id: z.uuidv7(),
 });
 export type FindByIdArgs = z.infer<typeof ZFindByIdArgs>;
 
 export const ZCreateCartItemArgs = z.object({
-  cartId: z.uuid(),
-  productId: z.uuid(),
-  priceId: z.uuid(),
+  cartId: z.uuidv7(),
+  productId: z.uuidv7(),
+  priceId: z.uuidv7(),
   quantity: z.number().int().positive().default(1),
 });
 export type CreateCartItemArgs = z.infer<typeof ZCreateCartItemArgs>;
+
+export const ZIndexArgs = z.object({
+  filter: z.object({ userId: z.uuidv7().nullish() }),
+  pagination: z.object({
+    page: z.number().int().positive().default(1),
+    limit: z.number().int().positive().default(10),
+  }),
+});

@@ -6,7 +6,7 @@ import { ProductService } from "../features/product/ProductService";
 
 export const ZGetProductWithPriceByBarcodeSagaArgs = z.object({
   barcode: z.string(),
-  storeId: z.uuid(),
+  storeId: z.uuidv7(),
 });
 export type GetProductWithPriceByBarcodeSagaArgs = z.infer<
   typeof ZGetProductWithPriceByBarcodeSagaArgs

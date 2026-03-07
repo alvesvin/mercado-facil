@@ -1,9 +1,9 @@
 import { z } from "zod";
 
 export const ZCreatePriceArgs = z.object({
-  storeId: z.uuid().nullish(),
-  productId: z.uuid(),
-  userId: z.uuid().nullish(),
+  storeId: z.uuidv7().nullish(),
+  productId: z.uuidv7(),
+  userId: z.uuidv7().nullish(),
   price: z.number().positive(),
   currency: z.string(),
   type: z.enum(["unit", "per_kg", "per_l"]),
@@ -12,9 +12,9 @@ export type CreatePriceArgs = z.infer<typeof ZCreatePriceArgs>;
 
 export const ZSearchPriceArgs = z.object({
   filters: z.object({
-    productId: z.uuid(),
-    storeId: z.uuid().optional(),
-    userId: z.uuid().optional(),
+    productId: z.uuidv7(),
+    storeId: z.uuidv7().optional(),
+    userId: z.uuidv7().optional(),
     // TODO: unify these types
     type: z.enum(["unit", "per_kg", "per_l"]),
   }),
@@ -26,7 +26,7 @@ export const ZSearchPriceArgs = z.object({
 export type SearchPriceArgs = z.infer<typeof ZSearchPriceArgs>;
 
 export const ZFindConsensusArgs = z.object({
-  productId: z.uuid(),
-  storeId: z.uuid(),
+  productId: z.uuidv7(),
+  storeId: z.uuidv7(),
 });
 export type FindConsensusArgs = z.infer<typeof ZFindConsensusArgs>;

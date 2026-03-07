@@ -1,3 +1,4 @@
+import { useMutation } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
 import { TextInput, View } from "react-native";
 import CurrencyInput from "react-native-currency-input";
@@ -6,26 +7,56 @@ import { ScanWorkflowActorContext } from "@/components/machines/scan-workflow.ma
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Text } from "@/components/ui/text";
+import { useTRPC } from "@/lib/trpc";
 
 export default function ConfirmPrice() {
   const actor = ScanWorkflowActorContext.useActorRef();
-  const prices = ScanWorkflowActorContext.useSelector((state) => state.context.prices);
+  const { prices, storeId, productId } = ScanWorkflowActorContext.useSelector((state) => ({
+    storeId: state.context.cart!.storeId!,
+    productId: state.context.product!.id,
+    prices: state.context.prices,
+  }));
 
   const inputRef = useRef<TextInput>(null);
   const isNewProduct = false;
 
   const [value, setValue] = useState(prices.unit?.price ?? 0);
 
+  const trpc = useTRPC();
+  const { mutateAsync: createPrice, isPending: isCreatingPrice } = useMutation(
+    trpc.price.create.mutationOptions(),
+  );
+
   useEffect(() => {
     inputRef.current?.focus();
   }, []);
 
-  function onConfirm() {
+  async function onConfirm() {
+    let priceId = prices.unit?.id || "";
+
+    if (isNewProduct || !priceId || value !== prices.unit?.price) {
+      try {
+        const newPrice = await createPrice({
+          storeId,
+          productId,
+          price: value,
+          currency: "BRL",
+          type: "unit",
+        });
+        priceId = newPrice.id;
+      } catch (error) {
+        // TODO: handle error
+        // biome-ignore lint/suspicious/noConsole: testing
+        console.error(error);
+        return;
+      }
+    }
+
     actor.send({
       type: "PRICE_CONFIRMED",
       // TODO: handle new price vs accepted price logic
       price: {
-        id: isNewProduct ? "" : prices.unit!.id,
+        id: priceId,
         price: value,
         currency: "BRL",
         type: "unit",
@@ -77,8 +108,8 @@ export default function ConfirmPrice() {
         >
           <Text>Cancelar</Text>
         </Button>
-        <Button onPress={onConfirm} size="lg" className="flex-1">
-          <Text>Confirmar</Text>
+        <Button disabled={isCreatingPrice} onPress={onConfirm} size="lg" className="flex-1">
+          <Text>{isCreatingPrice ? "Confirmando..." : "Confirmar"}</Text>
         </Button>
       </View>
     </SafeAreaView>

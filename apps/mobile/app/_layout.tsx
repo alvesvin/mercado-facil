@@ -5,15 +5,14 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Stack, useGlobalSearchParams, usePathname } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useColorScheme } from "nativewind";
+import { PostHogErrorBoundary, PostHogProvider } from "posthog-react-native";
 import { useEffect, useRef } from "react";
+import AuthProvider from "@/components/AuthProvider";
 import { api } from "@/lib/api";
-import { auth } from "@/lib/auth";
+import { posthog } from "@/lib/posthog";
 import { queryClient } from "@/lib/tanstack-query";
 import { NAV_THEME } from "@/lib/theme";
 import { TRPCProvider } from "@/lib/trpc";
-import { PostHogErrorBoundary, PostHogProvider } from "posthog-react-native";
-import { posthog } from "@/lib/posthog";
-import AuthProvider from "@/components/AuthProvider";
 
 export {
   // Catch any errors thrown by the Layout component.

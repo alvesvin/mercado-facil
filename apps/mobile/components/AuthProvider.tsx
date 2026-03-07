@@ -1,8 +1,8 @@
-import { auth } from "@/lib/auth";
-import LoadingState from "./LoadingState";
-import { useEffect, useEffectEvent } from "react";
-import { posthog } from "@/lib/posthog";
 import { useAsyncStorage } from "@react-native-async-storage/async-storage";
+import { useEffect, useEffectEvent } from "react";
+import { auth } from "@/lib/auth";
+import { posthog } from "@/lib/posthog";
+import LoadingState from "./LoadingState";
 
 export default function AuthProvider({ children }: { children: React.ReactNode }) {
   const { data, isPending } = auth.useSession();

@@ -15,6 +15,7 @@
     "@mercado-facil/db": "workspace:*",
     "@mercado-facil/domain": "workspace:*",
     "@mercado-facil/trpc": "workspace:*",
+    "drizzle-orm": "^0.45.1",
     "hono": "^4.12.5"
   },
   "devDependencies": {

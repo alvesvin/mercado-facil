@@ -1,6 +1,7 @@
 import { EventService } from "@mercado-facil/domain/features/event/EventService";
 import { TRPCError } from "@trpc/server";
 import type { MiddlewareFunction } from "@trpc/server/unstable-core-do-not-import";
+import { randomUUIDv7 } from "bun";
 import { Effect, Either } from "effect";
 
 // biome-ignore lint/suspicious/noExplicitAny: workaround
@@ -10,7 +11,7 @@ export const wideEventsMiddleware = (opts: MiddlewareOptions) =>
   Effect.gen(function* () {
     const eventService = yield* EventService;
 
-    const eventId = crypto.randomUUID();
+    const eventId = randomUUIDv7();
     const ts = Date.now();
     const sampling = 1.0;
     let sampled = Math.random() < sampling;

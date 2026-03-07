@@ -1,6 +1,7 @@
-import { Effect } from "effect";
+import { Effect, Either } from "effect";
+import { RequestContext } from "../../services/RequestContext";
 import { PriceRepository } from "./PriceRepository";
-import type { FindConsensusArgs } from "./types";
+import type { CreatePriceArgs, FindConsensusArgs } from "./types";
 
 /**
  * Compute median of sorted numeric array
@@ -57,7 +58,19 @@ export class PriceService extends Effect.Service<PriceService>()("PriceService",
     const priceRepository = yield* PriceRepository;
 
     return {
-      create: priceRepository.create.bind(priceRepository),
+      create: (args: CreatePriceArgs) =>
+        Effect.gen(function* () {
+          const ctx = yield* RequestContext;
+          const user = yield* ctx.auth.pipe(
+            Effect.map((ctx) => ctx.user),
+            Effect.either,
+          );
+          const price = yield* priceRepository.create({
+            ...args,
+            userId: Either.isRight(user) ? user.right.id : undefined,
+          });
+          return price;
+        }),
 
       findConsensus: (args: FindConsensusArgs) =>
         Effect.gen(function* () {
