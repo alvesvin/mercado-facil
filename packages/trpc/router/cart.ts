@@ -27,7 +27,11 @@ export const cart = router({
         const cartService = yield* CartService;
         const cart = yield* cartService.startCart();
         return cart;
-      }).pipe(Effect.provide(RequestContext.Default(ctx)), Effect.provide(DB)),
+      }).pipe(
+        Effect.provide(RequestContext.Default(ctx)),
+        Effect.provide(DB),
+        Effect.tapErrorCause(Effect.logError),
+      ),
     ),
   ),
 
