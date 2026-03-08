@@ -3,6 +3,9 @@
   "version": "0.0.0",
   "type": "module",
   "private": true,
+  "scripts": {
+    "db:push": "bun --bun drizzle-kit push"
+  },
   "dependencies": {
     "@effect/sql-pg": "^0.50.3",
     "@types/pg": "^8.18.0",
@@ -11,8 +14,8 @@
     "pg": "^8.20.0"
   },
   "devDependencies": {
-    "@types/bun": "latest",
     "@mercado-facil/typescript-config": "workspace:*",
+    "@types/bun": "latest",
     "drizzle-kit": "1.0.0-beta.16-ea816b6"
   }
 }

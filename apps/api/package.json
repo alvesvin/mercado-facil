@@ -4,7 +4,7 @@
   "scripts": {
     "start": "bun run src/index.ts",
     "dev": "bun run --hot src/index.ts",
-    "db:push": "drizzle-kit push"
+    "type-check": "tsc --noEmit --pretty"
   },
   "exports": {
     "./trpc": {
@@ -15,7 +15,6 @@
     "@mercado-facil/db": "workspace:*",
     "@mercado-facil/domain": "workspace:*",
     "@mercado-facil/trpc": "workspace:*",
-    "drizzle-orm": "^0.45.1",
     "hono": "^4.12.5"
   },
   "devDependencies": {

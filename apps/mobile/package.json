@@ -9,7 +9,8 @@
     "web": "expo start -c --web",
     "clean": "rm -rf .expo node_modules",
     "test": "jest",
-    "test:watch": "jest --watch"
+    "test:watch": "jest --watch",
+    "type-check": "tsc --noEmit --pretty"
   },
   "dependencies": {
     "@babel/runtime": "^7.28.6",

@@ -8,13 +8,18 @@ import type { CreatePriceArgs, FindConsensusArgs } from "./types";
  */
 function median(sorted: number[]): number {
   const n = sorted.length;
+  if (n === 0) return 0;
+
   const mid = Math.floor(n / 2);
 
   if (n % 2 === 0) {
-    return (sorted[mid - 1] + sorted[mid]) / 2;
+    const left = sorted[mid - 1];
+    const right = sorted[mid];
+    if (left === undefined || right === undefined) return 0;
+    return (left + right) / 2;
   }
 
-  return sorted[mid];
+  return sorted[mid] ?? 0;
 }
 
 /**
@@ -26,13 +31,19 @@ function percentile(sorted: number[], p: number): number {
   const index = (p / 100) * (sorted.length - 1);
   const lower = Math.floor(index);
   const upper = Math.ceil(index);
+  const lowerValue = sorted[lower];
+
+  if (lowerValue === undefined) return 0;
 
   if (lower === upper) {
-    return sorted[lower];
+    return lowerValue;
   }
 
+  const upperValue = sorted[upper];
+  if (upperValue === undefined) return lowerValue;
+
   const weight = index - lower;
-  return sorted[lower] * (1 - weight) + sorted[upper] * weight;
+  return lowerValue * (1 - weight) + upperValue * weight;
 }
 
 /**

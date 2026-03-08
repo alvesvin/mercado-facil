@@ -53,7 +53,7 @@ export const sessionTable = pgTable(
     userAgent: text("user_agent"),
     userId: uuid("user_id")
       .notNull()
-      .references(() => userTable.id, { onDelete: "cascade", onUpdate: "cascade" }),
+      .references(() => userTable.id, { onDelete: "cascade" }),
   },
   (table) => [index("session_userId_idx").on(table.userId)],
 );
@@ -66,7 +66,7 @@ export const accountTable = pgTable(
     providerId: text("provider_id").notNull(),
     userId: uuid("user_id")
       .notNull()
-      .references(() => userTable.id, { onDelete: "cascade", onUpdate: "cascade" }),
+      .references(() => userTable.id, { onDelete: "cascade" }),
     accessToken: text("access_token"),
     refreshToken: text("refresh_token"),
     idToken: text("id_token"),
@@ -95,12 +95,10 @@ export const storeTable = pgTable(
     ...COMMON_FIELDS,
     addedBy: uuid("added_by").references(() => userTable.id, {
       onDelete: "set null",
-      onUpdate: "cascade",
     }),
     approvedAt: timestamp("approved_at"),
     approvedBy: uuid("approved_by").references(() => userTable.id, {
       onDelete: "set null",
-      onUpdate: "cascade",
     }),
     name: text("name").notNull(),
     address: text("address"),
@@ -155,7 +153,6 @@ export const productTable = pgTable("product", {
   name: text("name").notNull(),
   brand: text("brand").references(() => brandTable.id, {
     onDelete: "set null",
-    onUpdate: "cascade",
   }),
   flavor: text("flavor"),
   category: text("category"),
@@ -175,7 +172,7 @@ export const productMediaTable = pgTable(
     ...COMMON_FIELDS,
     productId: uuid("product_id")
       .notNull()
-      .references(() => productTable.id, { onDelete: "cascade", onUpdate: "cascade" }),
+      .references(() => productTable.id, { onDelete: "cascade" }),
     tags: productMediaTag("tags").array(),
     mediaType: productMediaType("media_type").notNull(),
     objectId: text("object_id").notNull(),
@@ -194,14 +191,12 @@ export const priceTable = pgTable(
     ...COMMON_FIELDS,
     userId: uuid("user_id").references(() => userTable.id, {
       onDelete: "set null",
-      onUpdate: "cascade",
     }),
     productId: uuid("product_id")
       .notNull()
-      .references(() => productTable.id, { onDelete: "cascade", onUpdate: "cascade" }),
+      .references(() => productTable.id, { onDelete: "cascade" }),
     storeId: uuid("store_id").references(() => storeTable.id, {
       onDelete: "set null",
-      onUpdate: "cascade",
     }),
     price: decimal("price", { precision: 10, scale: 2, mode: "number" }).notNull(),
     price2: decimal("price_2", { precision: 10, scale: 2, mode: "number" }),
@@ -220,11 +215,10 @@ export const cartTable = pgTable(
     ...COMMON_FIELDS,
     storeId: uuid("store_id").references(() => storeTable.id, {
       onDelete: "set null",
-      onUpdate: "cascade",
     }),
     userId: uuid("user_id")
       .notNull()
-      .references(() => userTable.id, { onDelete: "set null", onUpdate: "cascade" }),
+      .references(() => userTable.id, { onDelete: "set null" }),
     completedAt: timestamp("completed_at"),
   },
   (table) => [
@@ -240,13 +234,12 @@ export const cartItemTable = pgTable(
     ...COMMON_FIELDS,
     cartId: uuid("cart_id")
       .notNull()
-      .references(() => cartTable.id, { onDelete: "cascade", onUpdate: "cascade" }),
+      .references(() => cartTable.id, { onDelete: "cascade" }),
     productId: uuid("product_id")
       .notNull()
-      .references(() => productTable.id, { onDelete: "restrict", onUpdate: "cascade" }),
+      .references(() => productTable.id, { onDelete: "restrict" }),
     priceId: uuid("price_id").references(() => priceTable.id, {
       onDelete: "restrict",
-      onUpdate: "cascade",
     }),
     quantity: integer("quantity").notNull().default(1),
   },

@@ -6,7 +6,7 @@
     "dev": "turbo run dev",
     "lint": "turbo run lint",
     "format": "bunx --bun @biomejs/biome check --write",
-    "check-types": "turbo run check-types"
+    "type-check": "turbo run type-check"
   },
   "devDependencies": {
     "@biomejs/biome": "2.4.5",

@@ -7,6 +7,7 @@ import { CartService } from "../features/cart/CartService";
 import { PriceService } from "../features/price/PriceService";
 import { ProductMediaService } from "../features/product/ProductMediaService";
 import { ProductService } from "../features/product/ProductService";
+import { ZProductQuantityUnitEnum } from "../features/product/types";
 import { StoreService } from "../features/store/StoreService";
 import { RequestContext } from "../services/RequestContext";
 
@@ -28,7 +29,7 @@ export const ZRegisterNewProductSagaArgs = z.object({
     brand: z.string(),
     flavor: z.string().nullish(),
     quantity: z.number(),
-    quantityUnit: z.string(),
+    quantityUnit: ZProductQuantityUnitEnum,
     category: z.string().nullish(),
     subCategory: z.string().nullish(),
   }),

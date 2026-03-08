@@ -101,10 +101,21 @@ export default function TakeProductPhoto() {
       if (productInfo?.quantity && productInfo.quantityUnit) {
         actor.send({
           type: "INFO_GOOD",
-          product: productInfo,
+          product: {
+            ...productInfo,
+            quantity: productInfo.quantity ?? undefined,
+            quantityUnit: productInfo.quantityUnit ?? undefined,
+          },
         });
       } else {
-        actor.send({ type: "INFO_BAD", product: productInfo });
+        actor.send({
+          type: "INFO_BAD",
+          product: productInfo && {
+            ...productInfo,
+            quantity: productInfo.quantity ?? undefined,
+            quantityUnit: productInfo.quantityUnit ?? undefined,
+          },
+        });
       }
     } finally {
       setIsGeneratingProductInfo(false);

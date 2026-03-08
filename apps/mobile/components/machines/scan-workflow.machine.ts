@@ -11,7 +11,6 @@ import { queryClient } from "@/lib/tanstack-query";
 
 type Cart = Pick<CartSelect, "id" | "storeId">;
 type Product = Partial<Omit<ProductInput, CommonProps>> & {
-  isNew: boolean;
   id: string;
   barcode: string;
 };

@@ -5,13 +5,26 @@ export const ZFindByBarcodeArgs = z.object({
 });
 export type FindByBarcodeArgs = z.infer<typeof ZFindByBarcodeArgs>;
 
+export const ZProductQuantityUnitEnum = z.enum([
+  "unit",
+  "kg",
+  "g",
+  "mg",
+  "lb",
+  "oz",
+  "ml",
+  "l",
+  "gal",
+]);
+export type ProductQuantityUnitEnum = z.infer<typeof ZProductQuantityUnitEnum>;
+
 export const ZCreateProductArgs = z.object({
   barcode: z.string(),
   name: z.string(),
   brand: z.string(),
   flavor: z.string().nullish(),
   quantity: z.number(),
-  quantityUnit: z.string(),
+  quantityUnit: ZProductQuantityUnitEnum,
   category: z.string().nullish(),
   subCategory: z.string().nullish(),
 });
