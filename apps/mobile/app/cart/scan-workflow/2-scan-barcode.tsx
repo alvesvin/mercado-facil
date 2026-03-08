@@ -60,7 +60,7 @@ export default function ScanBarcode() {
   );
 
   const codeScanner = useCodeScanner({
-    codeTypes: ["ean-13"],
+    codeTypes: ["ean-13", "ean-8"],
     onCodeScanned,
   });
 

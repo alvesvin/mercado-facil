@@ -2,8 +2,8 @@ import { useMutation } from "@tanstack/react-query";
 import { useEffect, useEffectEvent } from "react";
 import { ScanWorkflowActorContext } from "@/components/machines/scan-workflow.machine";
 import ProductProcessingLoadingState from "@/components/ProductProcessingLoadingState";
+import { goBackOrHome } from "@/lib/navigation-utils";
 import { useTRPC } from "@/lib/trpc";
-import { goBackOrHome } from "@/lib/utils";
 
 export default function CreateProduct() {
   const context = ScanWorkflowActorContext.useSelector((state) => state.context);
