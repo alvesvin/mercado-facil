@@ -14,8 +14,8 @@ RUN turbo prune @mercado-facil/api
 FROM base AS deps
 WORKDIR /app
 # First install the dependencies (as they change less often)
-COPY --from=prepare /app/out/ .
-RUN bun install --frozen-lockfile --production
+COPY --from=prepare /app/out .
+RUN bun install
 
 # ---
 FROM base AS runner
