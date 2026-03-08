@@ -9,7 +9,7 @@
     "web": "expo start -c --web",
     "clean": "rm -rf .expo node_modules",
     "test": "jest",
-    "test:watch": "jest --watch",
+    "test:watch": "jest --watch --no-watchman",
     "type-check": "tsc --noEmit --pretty"
   },
   "dependencies": {

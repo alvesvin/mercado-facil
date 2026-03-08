@@ -122,7 +122,10 @@ export const scanWorkflowMachine = setup({
     },
 
     newStore: {
-      on: { STORE_FOUND: { target: "scan", actions: handleStoreFound } },
+      on: {
+        STORE_FOUND: { target: "scan", actions: handleStoreFound },
+        CANCELLED: { target: "cancelled" },
+      },
     },
 
     scan: {
