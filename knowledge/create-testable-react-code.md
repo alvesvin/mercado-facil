@@ -5,7 +5,7 @@ The container-presentation pattern is awesome to test UI response to state but i
 - Test UI: container-presentation pattern
 - Test logic: extract business rules to separate function and import into container
 
-> Warning: if you are mocking it's a smell
+> Warning: if you are calling jest.mock() it's a smell
 
 ## When to use the full split (Container + View + Logic)
 
@@ -19,7 +19,42 @@ Don't apply the three-way split to every component—it gets verbose. Use it onl
 
 Rule of thumb: use the full split for workflow steps, checkout steps, anything that does "on click → call API → send event with this payload." Keep the rest in one place until it grows enough to justify a split. That way the pattern stays where it's worth the verbosity.
 
+### Can a view component import logic directly?
 
-### Tanstack Query mutations
+Some logic have side-effects that views won't have access to. Natually the framework will hint you to import it directly in views or not.
+If your logic is pure (free of side-effects) just import it in views, no problem.
+
+Example:
+```typescript
+// Component.logic.ts
+
+// ✅ Pure logic easy to import in views
+function canAccess(age: number) {
+    return age >= 18
+}
+
+// ❌ Logic with side-effects, you have to rely on container orchestration
+async function handleCreateTodo(
+  deps: { todo },
+  sideEffects: { callApi }
+) {
+  await sideEffects.callApi(deps.todo)
+}
+```
+
+### Where to put types?
+
+Since we're splitting into multiples files they might need to share type definitions. Export types from the logic file and reuse accross.
+
+## Tanstack Query mutations
 
 Prefer using `mutateAsync` over `mutate` because it's easier to test. Also consider rethrowing errors to the container when you also needed to handle it in logic layer.
+
+## Testing forms
+
+Forms should be their own separate component and tested in isolation.
+
+
+## Nested containers
+
+Will figure it out

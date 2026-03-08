@@ -1,0 +1,16 @@
+{
+  "name": "@mercado-facil/domain-types",
+  "version": "0.0.0",
+  "private": true,
+  "exports": {
+    ".": {
+      "types": "./index.ts"
+    }
+  },
+  "devDependencies": {
+    "@mercado-facil/db": "workspace:*",
+    "@mercado-facil/domain": "workspace:*",
+    "@mercado-facil/typescript-config": "workspace:*",
+    "drizzle-orm": "^1.0.0-beta.16-ea816b6"
+  }
+}

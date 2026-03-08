@@ -1,4 +1,4 @@
-import type { AppRouter } from "@mercado-facil/trpc/router";
+import type { AppRouter } from "@mercado-facil/trpc-types";
 import {
   createTRPCProxyClient,
   httpBatchLink,

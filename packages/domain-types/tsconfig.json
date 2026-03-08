@@ -1,0 +1,3 @@
+{
+  "extends": "@mercado-facil/typescript-config/bun.json"
+}

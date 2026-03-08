@@ -9,12 +9,11 @@
     "web": "expo start -c --web",
     "clean": "rm -rf .expo node_modules",
     "test": "jest",
-    "test:watch": "jest --watchAll"
+    "test:watch": "jest --watch"
   },
   "dependencies": {
     "@better-auth/expo": "^1.5.0",
     "@hookform/resolvers": "^5.2.2",
-    "@mercado-facil/trpc": "workspace:*",
     "@react-hook/debounce": "^4.0.0",
     "@react-native-async-storage/async-storage": "2.2.0",
     "@react-navigation/native": "^7.0.0",
@@ -84,7 +83,9 @@
   "devDependencies": {
     "@babel/core": "^7.26.0",
     "@babel/plugin-transform-react-jsx": "^7.28.6",
+    "@mercado-facil/trpc-types": "workspace:*",
     "@mercado-facil/typescript-config": "workspace:*",
+    "@mercado-facil/domain-types": "workspace:*",
     "@testing-library/react-native": "^13.3.3",
     "@types/jest": "29.5.14",
     "@types/react": "~19.2.10",

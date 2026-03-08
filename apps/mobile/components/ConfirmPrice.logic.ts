@@ -1,3 +1,6 @@
+import type { CreatePriceFn } from "@mercado-facil/trpc-types";
+import type { ScanWorkflowEmitter } from "./machines/scan-workflow.machine";
+
 export function shouldCreatePrice(args: {
   product: { isNew: boolean };
   prices: { unit?: { id: string; price: number } };
@@ -14,7 +17,7 @@ export async function handleConfirmPrice(
     product: { id: string; isNew: boolean };
     cart: { storeId: string };
   },
-  sideEffects: { createPrice: (args: any) => Promise<{ id: string }>; send: (event: any) => void },
+  sideEffects: { createPrice: CreatePriceFn; send: ScanWorkflowEmitter },
 ) {
   let priceId = deps.prices.unit?.id ?? "";
 
@@ -41,6 +44,6 @@ export async function handleConfirmPrice(
   });
 }
 
-export function handleCancelConfirmPrice(sideEffects: { send: (event: any) => void }) {
+export function handleCancelConfirmPrice(sideEffects: { send: ScanWorkflowEmitter }) {
   sideEffects.send({ type: "PRICE_CANCELLED" });
 }

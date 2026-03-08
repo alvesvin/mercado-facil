@@ -5,6 +5,9 @@ import {
   handleCartAlreadySet,
   handleConfirmStore,
   handleStoreNotFound,
+  shouldFetchNearbyStores,
+  shouldTriggerStoreFoundFromState,
+  shouldTriggerStoreNotFoundFromState,
 } from "./FindNearbyStore.logic";
 import { FindNearbyStoreView } from "./FindNearbyStore.view";
 import { useRefreshOnFocus } from "./hooks/useRefreshOnFocus";
@@ -29,7 +32,7 @@ export function FindNearByStore() {
     ...findNearbyStoreWithLocationQueryOptions,
     staleTime: 0,
     // 2. Cart does not have a store id, so we query for a nearby store
-    enabled: cart?.storeId === null,
+    enabled: shouldFetchNearbyStores(cart),
   });
 
   useRefreshOnFocus(findNearbyStoreWithLocationQueryOptions.queryKey);
@@ -40,12 +43,12 @@ export function FindNearByStore() {
   );
 
   // 1. Cart has a store id, so we emit a STORE_FOUND event
-  if (cart?.storeId) {
+  if (shouldTriggerStoreFoundFromState(cart)) {
     return handleCartAlreadySet({ cart: { storeId: cart.storeId } }, { send: actor.send });
   }
 
   // 3. If no store is found, we emit a STORE_NOT_FOUND event
-  if (!isLoadingStore && !isRefetchingStore && !store) {
+  if (shouldTriggerStoreNotFoundFromState({ cart, store, isRefetching: isRefetchingStore })) {
     return handleStoreNotFound({ send: actor.send });
   }
 

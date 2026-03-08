@@ -1,26 +1,22 @@
+import type {
+  CartSelect,
+  CommonProps,
+  PriceSelect,
+  ProductInput,
+} from "@mercado-facil/domain-types";
 import { createActorContext } from "@xstate/react";
 import { assign, fromPromise, setup } from "xstate";
 import { api } from "@/lib/api";
 import { queryClient } from "@/lib/tanstack-query";
 
-type Cart = { id: string; storeId: string | null };
-type Product = {
+type Cart = Pick<CartSelect, "id" | "storeId">;
+type Product = Partial<Omit<ProductInput, CommonProps>> & {
+  isNew: boolean;
   id: string;
   barcode: string;
-  name?: string | null;
-  brand?: string | null;
-  flavor?: string | null;
-  quantity?: number | null;
-  quantityUnit?: "unit" | "kg" | "g" | "mg" | "l" | "ml" | "lb" | "oz" | "gal" | null;
-  category?: string | null;
-  subCategory?: string | null;
 };
-type Price = { id: string; price: number; currency: string; type: "unit" | "per_kg" | "per_l" };
-type Prices = {
-  unit?: Price;
-  per_kg?: Price;
-  per_l?: Price;
-};
+type Price = Pick<PriceSelect, "id" | "price" | "currency" | "type">;
+type Prices = { unit?: Price; per_kg?: Price; per_l?: Price };
 
 export type ScanWorkflowContext = {
   cart?: Cart;
@@ -40,6 +36,8 @@ export type ScanWorkflowEvents =
   | { type: "INFO_BAD"; product: Omit<Product, "id" | "barcode"> | null }
   | { type: "PRICE_CONFIRMED"; price: Price }
   | { type: "PRICE_CANCELLED" };
+
+export type ScanWorkflowEmitter = (event: ScanWorkflowEvents) => void;
 
 const cartStartQueryKey = ["cart", "start", { type: "query" }];
 
