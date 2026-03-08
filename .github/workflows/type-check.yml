@@ -1,4 +1,4 @@
-name: Test Mobile
+name: Type Check
 on:
   push:
     branches:
@@ -24,4 +24,4 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-bun- # Fallback to a broader cache if the primary key misses
 
-      - run: cd apps/mobile && bun run test
+      - run: bun type-check
