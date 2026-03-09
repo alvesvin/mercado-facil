@@ -1,6 +1,6 @@
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { generateText, Output } from "ai";
-import { Config, Effect, Either } from "effect";
+import { Effect, Either } from "effect";
 import type { GenerateProductInfoArgs } from "./types";
 import { ZAiProductInfo } from "./types";
 
@@ -16,7 +16,7 @@ O nome do produto deve conter no máximo 2 a 3 palavras.`;
 
 export class AiService extends Effect.Service<AiService>()("AiService", {
   effect: Effect.gen(function* () {
-    const apiKey = yield* Config.string("GOOGLE_GENERATIVE_AI_API_KEY");
+    const apiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY!;
     const google = createGoogleGenerativeAI({ apiKey });
 
     return {

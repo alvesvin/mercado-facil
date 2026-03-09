@@ -32,6 +32,9 @@ export async function handleConfirmPrice(
     priceId = newPrice.id;
   }
 
+  // TODO: instead of creating price here, create only at the end
+  // TODO: limit new price creation to 150 per user per day
+
   sideEffects.send({
     type: "PRICE_CONFIRMED",
     // TODO: handle new price vs accepted price logic

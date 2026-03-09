@@ -16,3 +16,7 @@ export type UpdateCartStoreFn = (
 export type CreateStoreFn = (
   input: RouterInput["store"]["create"],
 ) => Promise<RouterOutput["store"]["create"]>;
+
+export type GenerateProductInfoFn = (
+  input: RouterInput["ai"]["generateProductInfo"],
+) => Promise<RouterOutput["ai"]["generateProductInfo"]>;
