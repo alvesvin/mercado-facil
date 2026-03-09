@@ -4,7 +4,7 @@
   "editor.useTabStops": false,
   "explorer.fileNesting.enabled": true,
   "explorer.fileNesting.patterns": {
-    "*.tsx": "${capture}.test.tsx,${capture}.logic.test.ts,${capture}.view.tsx,${capture}.logic.ts",
+    "*.tsx": "${capture}View.tsx,${capture}View.test.tsx,${capture}Logic.ts,${capture}Logic.test.ts,${capture}Form.tsx,${capture}Form.test.tsx",
     "*.ts": "${capture}.test.ts"
   }
 }

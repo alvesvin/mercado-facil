@@ -1,19 +1,18 @@
+import { useRef } from "react";
+import { StyleSheet } from "react-native";
+import { createAnimatedComponent, FadeInDown, FadeOut } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 import {
   Camera,
-  useCameraPermission,
   useCameraDevice,
+  useCameraPermission,
   useCodeScanner,
 } from "react-native-vision-camera";
-import { StyleSheet } from "react-native";
-import ScannerOverlay from "./ScannerOverlay";
-import { Text } from "./ui/text";
-import { Button } from "./ui/button";
-import { useRef } from "react";
+import { codeTypes, getCanScan, type ScanBarcodeMachineState } from "./ScanBarcodeLogic";
 import ScanCameraState from "./ScanCameraState";
-import { getCanScan, type ScanBarcodeMachineState } from "./ScanBarcode.logic";
-import { createAnimatedComponent, FadeInDown, FadeOut } from "react-native-reanimated";
-import { codeTypes } from "./ScanBarcode.logic";
+import ScannerOverlay from "./ScannerOverlay";
+import { Button } from "./ui/button";
+import { Text } from "./ui/text";
 
 const AnimatedText = createAnimatedComponent(Text);
 

@@ -16,11 +16,9 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
-      "bundleIdentifier": "br.com.mercado-facil",
+      "bundleIdentifier": "br.app.mercadofacil",
       "supportsTablet": true,
       "infoPlist": {
         "NSCameraUsageDescription": "Necessário para scanear códigos de barras",
@@ -28,7 +26,7 @@
       }
     },
     "android": {
-      "package": "br.com.mercado-facil",
+      "package": "br.app.mercadofacil",
       "edgeToEdgeEnabled": true,
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",

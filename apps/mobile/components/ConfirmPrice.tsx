@@ -2,8 +2,8 @@ import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
 import { ScanWorkflowActorContext } from "@/components/machines/scan-workflow.machine";
 import { useTRPC } from "@/lib/trpc";
-import { handleCancelConfirmPrice, handleConfirmPrice } from "./ConfirmPrice.logic";
-import { ConfirmPriceView } from "./ConfirmPrice.view";
+import { handleCancelConfirmPrice, handleConfirmPrice } from "./ConfirmPriceLogic";
+import { ConfirmPriceView } from "./ConfirmPriceView";
 
 export function ConfirmPrice() {
   const actor = ScanWorkflowActorContext.useActorRef();

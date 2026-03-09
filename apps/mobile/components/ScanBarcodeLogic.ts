@@ -1,8 +1,8 @@
 import type { AudioPlayer } from "expo-audio";
-import type { ScanWorkflowEmitter } from "./machines/scan-workflow.machine";
-import { notificationAsync, NotificationFeedbackType } from "expo-haptics";
-import { setup } from "xstate";
+import { NotificationFeedbackType, type notificationAsync } from "expo-haptics";
 import type { CodeType } from "react-native-vision-camera";
+import { setup } from "xstate";
+import type { ScanWorkflowEmitter } from "./machines/scan-workflow.machine";
 
 export type ScanBarcodeEvents =
   | { type: "CODE_SCANNED"; barcode: string }
@@ -85,6 +85,8 @@ export async function handleCodeScanned(
       sideEffects.scanWorkflowEmit({ type: "PRODUCT_NOT_FOUND", barcode: deps.barcode });
     }
   } catch (error) {
+    // biome-ignore lint/suspicious/noConsole: testing
+    console.error(error);
     sideEffects.haptics.notificationAsync(NotificationFeedbackType.Error);
   }
 }

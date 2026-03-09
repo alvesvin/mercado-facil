@@ -2,8 +2,8 @@ import { useDebounce } from "@react-hook/debounce";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { useTRPC } from "@/lib/trpc";
-import { handleNotFound, handleSelectStore, shouldFetchStores } from "./FindStoreManual.logic";
-import { FindStoreManualView } from "./FindStoreManual.view";
+import { handleNotFound, handleSelectStore, shouldFetchStores } from "./FindStoreManualLogic";
+import { FindStoreManualView } from "./FindStoreManualView";
 import { useLocation } from "./hooks/useLocation";
 import { ScanWorkflowActorContext } from "./machines/scan-workflow.machine";
 

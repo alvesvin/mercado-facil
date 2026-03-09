@@ -1,8 +1,8 @@
 import { useMutation } from "@tanstack/react-query";
 import { useTRPC } from "@/lib/trpc";
-import { handleCancelCreateStore, handleCreateStore } from "./CreateStore.logic";
-import { CreateStoreView } from "./CreateStore.view";
 import type { CreateStoreFormSchema } from "./CreateStoreForm";
+import { handleCancelCreateStore, handleCreateStore } from "./CreateStoreLogic";
+import { CreateStoreView } from "./CreateStoreView";
 import { useLocation } from "./hooks/useLocation";
 import { ScanWorkflowActorContext } from "./machines/scan-workflow.machine";
 

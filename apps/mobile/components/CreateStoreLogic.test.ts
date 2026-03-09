@@ -1,4 +1,4 @@
-import { handleCancelCreateStore, handleCreateStore } from "./CreateStore.logic";
+import { handleCancelCreateStore, handleCreateStore } from "./CreateStoreLogic";
 
 describe("handleCreateStore", () => {
   it("should send a STORE_FOUND event", async () => {

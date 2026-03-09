@@ -1,15 +1,16 @@
+import { useMachine } from "@xstate/react";
+import { useAudioPlayer } from "expo-audio";
+import { notificationAsync } from "expo-haptics";
 import { ScanWorkflowActorContext } from "./machines/scan-workflow.machine";
 import {
   fetchProductByBarcode,
   handleCancelScanBarcode,
   handleCodeScanned,
   isValidEAN,
-} from "./ScanBarcode.logic";
-import { ScanBarcodeView } from "./ScanBarcode.view";
-import { useMachine } from "@xstate/react";
-import { scanBarcodeMachine } from "./ScanBarcode.logic";
-import { useAudioPlayer } from "expo-audio";
-import { notificationAsync } from "expo-haptics";
+  scanBarcodeMachine,
+} from "./ScanBarcodeLogic";
+import { ScanBarcodeView } from "./ScanBarcodeView";
+
 const beepSource = require("@/assets/audio/beep.wav");
 
 export function ScanBarcode() {

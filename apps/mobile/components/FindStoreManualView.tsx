@@ -19,8 +19,8 @@ import { Icon } from "@/components/ui/icon";
 import { Input } from "@/components/ui/input";
 import { Text } from "@/components/ui/text";
 import { formatDistance } from "@/lib/utils";
-import type { StoreItem } from "./FindStoreManual.logic";
-import { shouldShowNotFoundButton } from "./FindStoreManual.logic";
+import type { StoreItem } from "./FindStoreManualLogic";
+import { shouldShowNotFoundButton } from "./FindStoreManualLogic";
 
 const AnimatedText = Reanimated.createAnimatedComponent(Text);
 const AnimatedButton = Reanimated.createAnimatedComponent(Button);

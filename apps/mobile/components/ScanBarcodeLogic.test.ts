@@ -1,4 +1,6 @@
 import type { AudioPlayer } from "expo-audio";
+import { NotificationFeedbackType } from "expo-haptics";
+import { createActor } from "xstate";
 import {
   codeTypes,
   getCanScan,
@@ -6,9 +8,7 @@ import {
   handleCodeScanned,
   isValidEAN,
   scanBarcodeMachine,
-} from "./ScanBarcode.logic";
-import { NotificationFeedbackType } from "expo-haptics";
-import { createActor } from "xstate";
+} from "./ScanBarcodeLogic";
 
 describe("handleCodeScanned", () => {
   let sideEffects: Parameters<typeof handleCodeScanned>[1];

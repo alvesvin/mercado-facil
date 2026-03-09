@@ -1,5 +1,5 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react-native";
-import { CreateStoreView } from "./CreateStore.view";
+import { CreateStoreView } from "./CreateStoreView";
 
 describe("CreateStoreView", () => {
   it("should render", () => {

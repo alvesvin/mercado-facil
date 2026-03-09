@@ -31,10 +31,10 @@ import { useTRPC } from "@/lib/trpc";
 const AnimatedSafeAreaView = createAnimatedComponent(SafeAreaView);
 
 const loadingMessages = [
-  "Estamos trabalhando nisso",
-  "Logo mais estara pronto",
   "Lendo os detalhes do produto",
-  "Organizando as informacoes para voce",
+  "Logo mais estará pronto",
+  "Estamos trabalhando nisso",
+  "Organizando as informações para você",
 ];
 
 export default function TakeProductPhoto() {

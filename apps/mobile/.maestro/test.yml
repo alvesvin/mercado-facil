@@ -1,0 +1,9 @@
+appId: br.app.mercadofacil
+name: Scan workflow
+tags:
+  - smoke-test
+---
+- clearState
+- launchApp
+- tapOn:
+    point: 46%,93%

@@ -8,8 +8,8 @@ import {
   shouldFetchNearbyStores,
   shouldTriggerStoreFoundFromState,
   shouldTriggerStoreNotFoundFromState,
-} from "./FindNearbyStore.logic";
-import { FindNearbyStoreView } from "./FindNearbyStore.view";
+} from "./FindNearbyStoreLogic";
+import { FindNearbyStoreView } from "./FindNearbyStoreView";
 import { useRefreshOnFocus } from "./hooks/useRefreshOnFocus";
 import { ScanWorkflowActorContext } from "./machines/scan-workflow.machine";
 

@@ -2,7 +2,7 @@ import {
   handleCancelConfirmPrice,
   handleConfirmPrice,
   shouldCreatePrice,
-} from "./ConfirmPrice.logic";
+} from "./ConfirmPriceLogic";
 
 describe("shouldCreatePrice", () => {
   it("should return false if the product is new", () => {

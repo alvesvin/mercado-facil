@@ -83,10 +83,10 @@ export default function NearbyStoreLoadingState() {
         </View>
 
         <Text variant="h3" className="text-center">
-          Procurando mercado perto de voce
+          Procurando mercado perto de você
         </Text>
         <Text className="mt-3 text-center text-muted-foreground">
-          Estamos usando sua localizacao para sugerir a loja mais proxima e acelerar o inicio da
+          Estamos usando sua localização para sugerir a loja mais próxima e acelerar o início da
           compra.
         </Text>
       </View>

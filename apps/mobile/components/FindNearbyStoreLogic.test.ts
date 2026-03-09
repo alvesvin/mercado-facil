@@ -4,7 +4,7 @@ import {
   handleStoreNotFound,
   shouldFetchNearbyStores,
   shouldTriggerStoreNotFoundFromState,
-} from "./FindNearbyStore.logic";
+} from "./FindNearbyStoreLogic";
 
 describe("handleCartAlreadySet", () => {
   it("should send a STORE_FOUND event", () => {

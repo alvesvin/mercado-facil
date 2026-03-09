@@ -3,7 +3,7 @@ import {
   handleSelectStore,
   shouldFetchStores,
   shouldShowNotFoundButton,
-} from "./FindStoreManual.logic";
+} from "./FindStoreManualLogic";
 
 describe("shouldFetchStores", () => {
   it("should return true if the search not empty and has location", () => {

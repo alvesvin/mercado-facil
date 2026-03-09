@@ -1,5 +1,5 @@
 import { render, screen } from "@testing-library/react-native";
-import { FindNearbyStoreView } from "./FindNearbyStore.view";
+import { FindNearbyStoreView } from "./FindNearbyStoreView";
 
 describe("FindNearbyStoreView", () => {
   it("should render", () => {
@@ -26,7 +26,7 @@ describe("FindNearbyStoreView", () => {
         onReject={() => {}}
       />,
     );
-    expect(screen.getByText("Procurando mercado perto de voce")).toBeTruthy();
+    expect(screen.getByText("Procurando mercado perto de você")).toBeTruthy();
   });
 
   it("should render store details when store is found", () => {

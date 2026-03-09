@@ -1,7 +1,7 @@
-import { render, screen, fireEvent } from "@testing-library/react-native";
-import { ScanBarcodeView } from "./ScanBarcode.view";
+import { fireEvent, render, screen } from "@testing-library/react-native";
 import { mock } from "jest-mock-extended";
 import * as VisionCamera from "react-native-vision-camera";
+import { ScanBarcodeView } from "./ScanBarcodeView";
 
 describe("ScanBarcodeView", () => {
   beforeEach(() => {
@@ -44,7 +44,7 @@ describe("ScanBarcodeView", () => {
       hasPermission: true,
       requestPermission: jest.fn(),
     });
-    jest.spyOn(VisionCamera, "useCameraDevice").mockReturnValue(mock());
+    jest.spyOn(VisionCamera, "useCameraDevice").mockReturnValue(mock() as never);
     render(<ScanBarcodeView state="idle" onCancel={() => {}} onCodeScanned={() => {}} />);
     expect(screen.getByText("Aproxime a câmera do código de barras")).toBeTruthy();
   });
@@ -54,7 +54,7 @@ describe("ScanBarcodeView", () => {
       hasPermission: true,
       requestPermission: jest.fn(),
     });
-    jest.spyOn(VisionCamera, "useCameraDevice").mockReturnValue(mock());
+    jest.spyOn(VisionCamera, "useCameraDevice").mockReturnValue(mock() as never);
     render(<ScanBarcodeView state="invalid" onCancel={() => {}} onCodeScanned={() => {}} />);
     expect(screen.getByText("Código inválido. Tente novamente.")).toBeTruthy();
   });
@@ -64,7 +64,7 @@ describe("ScanBarcodeView", () => {
       hasPermission: true,
       requestPermission: jest.fn(),
     });
-    jest.spyOn(VisionCamera, "useCameraDevice").mockReturnValue(mock());
+    jest.spyOn(VisionCamera, "useCameraDevice").mockReturnValue(mock() as never);
     render(<ScanBarcodeView state="validating" onCancel={() => {}} onCodeScanned={() => {}} />);
     expect(screen.getByText("Validando, aguarde um momento...")).toBeTruthy();
   });
@@ -74,7 +74,7 @@ describe("ScanBarcodeView", () => {
       hasPermission: true,
       requestPermission: jest.fn(),
     });
-    jest.spyOn(VisionCamera, "useCameraDevice").mockReturnValue(mock());
+    jest.spyOn(VisionCamera, "useCameraDevice").mockReturnValue(mock() as never);
     const onCancel = jest.fn();
     render(<ScanBarcodeView state="idle" onCancel={onCancel} onCodeScanned={() => {}} />);
     expect(screen.getByText("Cancelar")).toBeTruthy();

@@ -1,5 +1,5 @@
 import { render, screen } from "@testing-library/react-native";
-import { FindStoreManualView } from "./FindStoreManual.view";
+import { FindStoreManualView } from "./FindStoreManualView";
 
 describe("FindStoreManualView", () => {
   it("should render", () => {

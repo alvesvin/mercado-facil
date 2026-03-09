@@ -1,5 +1,5 @@
 import { fireEvent, render, screen } from "@testing-library/react-native";
-import { ConfirmPriceView } from "./ConfirmPrice.view";
+import { ConfirmPriceView } from "./ConfirmPriceView";
 
 describe("ConfirmPriceView", () => {
   it("renders initial value correctly", () => {
