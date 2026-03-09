@@ -1,3 +1,5 @@
+const { mockDeep } = require("jest-mock-extended");
+
 // Mock Worklets so Reanimated doesn't try to init native in Jest https://docs.swmansion.com/react-native-worklets/docs/guides/testing/
 jest.mock("react-native-worklets", () => require("react-native-worklets/src/mock"));
 // https://docs.swmansion.com/react-native-reanimated/docs/2.x/guide/testing/
@@ -21,4 +23,12 @@ jest.mock("@shopify/flash-list", () => {
       });
     }),
   };
+});
+
+jest.mock("expo-router", () => mockDeep());
+
+jest.mock("react-native-vision-camera", () => {
+  const mock = mockDeep();
+  mock.Camera = () => <></>;
+  return mock;
 });

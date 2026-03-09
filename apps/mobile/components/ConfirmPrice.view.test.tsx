@@ -1,8 +1,6 @@
 import { fireEvent, render, screen } from "@testing-library/react-native";
 import { ConfirmPriceView } from "./ConfirmPrice.view";
 
-jest.mock("expo-router", () => ({}));
-
 describe("ConfirmPriceView", () => {
   it("renders initial value correctly", () => {
     render(
