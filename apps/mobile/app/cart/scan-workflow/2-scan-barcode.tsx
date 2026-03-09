@@ -16,10 +16,15 @@ import ScannerOverlay from "@/components/ScannerOverlay";
 import { Button } from "@/components/ui/button";
 import { Text } from "@/components/ui/text";
 import { api } from "@/lib/api";
+import { useAudioPlayer } from "expo-audio";
+
+const beepSource = require("@/assets/audio/beep.wav");
 
 export default function ScanBarcode() {
   const actor = ScanWorkflowActorContext.useActorRef();
   const cart = ScanWorkflowActorContext.useSelector((state) => state.context.cart)!;
+
+  const beep = useAudioPlayer(beepSource);
 
   const { hasPermission, requestPermission } = useCameraPermission();
   const queryClient = useQueryClient();
@@ -34,6 +39,8 @@ export default function ScanBarcode() {
       scanned.current = true;
 
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      beep.seekTo(0);
+      beep.play();
 
       const product = await queryClient.fetchQuery({
         queryKey: ["product", "findWithPriceByBarcodeSaga", { barcode: code.value, type: "query" }],
@@ -56,7 +63,7 @@ export default function ScanBarcode() {
         actor.send({ type: "PRODUCT_NOT_FOUND", barcode: code.value! });
       }
     },
-    [queryClient, cart.storeId, actor],
+    [queryClient, cart.storeId, actor, beep],
   );
 
   const codeScanner = useCodeScanner({
