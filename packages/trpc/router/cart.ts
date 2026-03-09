@@ -3,6 +3,7 @@ import { CartService } from "@mercado-facil/domain/features/cart/CartService";
 import {
   ZCreateCartItemArgs,
   ZFindByIdArgs,
+  ZIndexArgs,
   ZUpdateStoreArgs,
 } from "@mercado-facil/domain/features/cart/types";
 import { LiveRuntime } from "@mercado-facil/domain/runtime/live";
@@ -15,6 +16,16 @@ import { Effect } from "effect";
 import { procedure, router } from "../trpc";
 
 export const cart = router({
+  index: procedure.input(ZIndexArgs).query(({ input, ctx }) =>
+    LiveRuntime.runPromise(
+      Effect.gen(function* () {
+        const cartService = yield* CartService;
+        const carts = yield* cartService.index(input);
+        return carts;
+      }).pipe(Effect.provide(DB), Effect.provide(RequestContext.Default(ctx))),
+    ),
+  ),
+
   findById: procedure.input(ZFindByIdArgs).query(({ input }) =>
     LiveRuntime.runPromise(
       Effect.gen(function* () {

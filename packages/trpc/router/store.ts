@@ -20,6 +20,7 @@ export const store = router({
       }).pipe(Effect.provide(DB), Effect.provide(RequestContext.Default(ctx))),
     ),
   ),
+
   findNear: procedure.input(ZFindNearArgs).query(({ input, ctx }) =>
     LiveRuntime.runPromise(
       Effect.gen(function* () {
@@ -29,6 +30,7 @@ export const store = router({
       }).pipe(Effect.provide(DB), Effect.provide(RequestContext.Default(ctx))),
     ),
   ),
+
   create: procedure.input(ZCreateStoreArgs).mutation(({ input, ctx }) =>
     LiveRuntime.runPromise(
       Effect.gen(function* () {

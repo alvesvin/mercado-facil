@@ -32,10 +32,11 @@ export function FindStoreManualView(props: {
   isLoading: boolean;
   selectingStoreId: string;
   onNotFound: () => void;
-  onSelectStore: (store: StoreItem) => void;
+  onSelectStore: (storeId: string) => void;
 }) {
   const { search, setSearch, stores, isLoading, selectingStoreId, onNotFound, onSelectStore } =
     props;
+
   const orbitProgress = useSharedValue(0);
 
   useEffect(() => {
@@ -121,9 +122,10 @@ export function FindStoreManualView(props: {
           renderItem={({ item }) => {
             return (
               <Pressable
+                key={`select-store-${item.id}`}
                 testID={`select-store-${item.id}`}
                 disabled={!!selectingStoreId}
-                onPress={() => onSelectStore(item)}
+                onPress={() => onSelectStore(item.id)}
               >
                 <Reanimated.View
                   entering={FadeInDown}

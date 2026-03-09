@@ -3,7 +3,7 @@ import { Effect } from "effect";
 import { RequestContext } from "../../services/RequestContext";
 import { CartItemRepository } from "./CartItemRepository";
 import { CartRepository } from "./CartRepository";
-import type { CreateCartItemArgs } from "./types";
+import type { CreateCartItemArgs, IndexArgs } from "./types";
 
 export class CartService extends Effect.Service<CartService>()("CartService", {
   effect: Effect.gen(function* () {
@@ -26,6 +26,17 @@ export class CartService extends Effect.Service<CartService>()("CartService", {
       updateStore: cartRepository.updateStore.bind(cartRepository),
 
       findById: cartRepository.findById.bind(cartRepository),
+
+      index: (args: IndexArgs) =>
+        Effect.gen(function* () {
+          const ctx = yield* RequestContext;
+          const { user } = yield* ctx.auth;
+
+          return yield* cartRepository.index({
+            filter: { userId: user.id },
+            pagination: args.pagination,
+          });
+        }),
 
       addProduct: (args: CreateCartItemArgs) =>
         Effect.gen(function* () {

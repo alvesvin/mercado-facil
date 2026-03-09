@@ -1,13 +1,15 @@
 import { createServerClient } from "@supabase/ssr";
-import { Effect } from "effect";
+import { Effect, Config } from "effect";
 
-export const getSupabaseServerClient = (supabaseUrl: string, supabasePublicKey: string) =>
-  Effect.gen(function* () {
-    const supabase = createServerClient(supabaseUrl, supabasePublicKey, {
-      cookies: {
-        getAll: () => [],
-        setAll: () => {},
-      },
-    });
-    return supabase;
+export const getSupabaseServerClient = Effect.gen(function* () {
+  const supabaseUrl = yield* Config.string("SUPABASE_URL");
+  const supabaseSecretKey = yield* Config.string("SUPABASE_SECRET_KEY");
+
+  const supabase = createServerClient(supabaseUrl, supabaseSecretKey, {
+    cookies: {
+      getAll: () => [],
+      setAll: () => {},
+    },
   });
+  return supabase;
+});

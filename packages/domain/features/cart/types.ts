@@ -1,5 +1,5 @@
-import type { cartTable } from "@mercado-facil/db/schema";
-import type { InferSelectModel } from "drizzle-orm";
+import { cartTable } from "@mercado-facil/db/schema";
+import { getColumns, type InferSelectModel } from "drizzle-orm";
 import { z } from "zod";
 
 export type Cart = InferSelectModel<typeof cartTable>;
@@ -36,10 +36,27 @@ export const ZCreateCartItemArgs = z.object({
 });
 export type CreateCartItemArgs = z.infer<typeof ZCreateCartItemArgs>;
 
-export const ZIndexArgs = z.object({
+export const ZIndexPagination = z
+  .object({
+    cursor: z.uuidv7().nullish(),
+    limit: z.number().int().positive().optional().default(25),
+    sort: z.enum(["id", "completedAt"]).optional().default("id"),
+    order: z.enum(["asc", "desc"]).optional().default("desc"),
+  })
+  .default({
+    cursor: undefined,
+    limit: 25,
+    sort: "id",
+    order: "desc",
+  });
+
+export const ZIndexRepositoryArgs = z.object({
   filter: z.object({ userId: z.uuidv7().nullish() }),
-  pagination: z.object({
-    page: z.number().int().positive().default(1),
-    limit: z.number().int().positive().default(10),
-  }),
+  pagination: ZIndexPagination,
 });
+export type IndexRepositoryArgs = z.infer<typeof ZIndexRepositoryArgs>;
+
+export const ZIndexArgs = z.object({
+  pagination: ZIndexPagination,
+});
+export type IndexArgs = z.infer<typeof ZIndexArgs>;
