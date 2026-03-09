@@ -1,15 +1,15 @@
-import { View } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Text } from "@/components/ui/text";
-import { useTRPC } from "@/lib/trpc";
-import { useQuery } from "@tanstack/react-query";
 import { FlashList } from "@shopify/flash-list";
-import { Link } from "expo-router";
-import { Separator } from "@/components/ui/separator";
+import { useQuery } from "@tanstack/react-query";
 import { formatRelative } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { Icon } from "@/components/ui/icon";
+import { Link } from "expo-router";
 import { ShoppingCartIcon } from "phosphor-react-native";
+import { View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { Icon } from "@/components/ui/icon";
+import { Separator } from "@/components/ui/separator";
+import { Text } from "@/components/ui/text";
+import { useTRPC } from "@/lib/trpc";
 
 export default function HomePage() {
   const { top } = useSafeAreaInsets();

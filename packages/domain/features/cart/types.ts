@@ -1,5 +1,5 @@
-import { cartTable } from "@mercado-facil/db/schema";
-import { getColumns, type InferSelectModel } from "drizzle-orm";
+import type { cartTable } from "@mercado-facil/db/schema";
+import type { InferSelectModel } from "drizzle-orm";
 import { z } from "zod";
 
 export type Cart = InferSelectModel<typeof cartTable>;

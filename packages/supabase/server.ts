@@ -1,5 +1,5 @@
 import { createServerClient } from "@supabase/ssr";
-import { Effect, Config } from "effect";
+import { Config, Effect } from "effect";
 
 export const getSupabaseServerClient = Effect.gen(function* () {
   const supabaseUrl = yield* Config.string("SUPABASE_URL");

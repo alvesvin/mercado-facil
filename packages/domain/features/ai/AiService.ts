@@ -1,6 +1,6 @@
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { generateText, Output } from "ai";
-import { Effect, Either, Config } from "effect";
+import { Config, Effect, Either } from "effect";
 import type { GenerateProductInfoArgs } from "./types";
 import { ZAiProductInfo } from "./types";
 

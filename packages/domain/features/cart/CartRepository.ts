@@ -1,14 +1,14 @@
 import { cartItemTable, cartTable, priceTable, storeTable } from "@mercado-facil/db/schema";
 import { IDB } from "@mercado-facil/db/service";
 import { ResourceNotFoundError } from "@mercado-facil/errors";
-import { and, asc, desc, eq, gte, gt, isNull, isNotNull, sql } from "drizzle-orm";
+import { and, asc, desc, eq, gt, gte, isNotNull, isNull, sql } from "drizzle-orm";
 import { Effect } from "effect";
 import type { FindByIdArgs } from "../store/types";
 import type {
   CreateCartArgs,
   GetActiveByUserIdArgs,
-  UpdateStoreArgs,
   IndexRepositoryArgs,
+  UpdateStoreArgs,
 } from "./types";
 
 export class CartRepository extends Effect.Service<CartRepository>()("CartRepository", {
