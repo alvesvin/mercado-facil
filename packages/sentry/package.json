@@ -1,0 +1,12 @@
+{
+  "name": "@mercado-facil/sentry",
+  "version": "0.0.0",
+  "type": "module",
+  "private": true,
+  "devDependencies": {
+    "@mercado-facil/typescript-config": "workspace:*"
+  },
+  "dependencies": {
+    "@sentry/bun": "^10.43.0"
+  }
+}

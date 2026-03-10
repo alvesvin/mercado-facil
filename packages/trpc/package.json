@@ -9,6 +9,7 @@
     "@mercado-facil/db": "workspace:*",
     "@mercado-facil/domain": "workspace:*",
     "@mercado-facil/errors": "workspace:*",
+    "@mercado-facil/sentry": "workspace:*",
     "@trpc/server": "^11.11.0",
     "better-auth": "^1.5.3",
     "hono": "^4.12.5",

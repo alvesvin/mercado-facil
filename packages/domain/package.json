@@ -7,6 +7,7 @@
     "@ai-sdk/google": "^3.0.37",
     "@mercado-facil/db": "workspace:*",
     "@mercado-facil/errors": "workspace:*",
+    "@mercado-facil/logger": "workspace:*",
     "@mercado-facil/supabase": "workspace:*",
     "ai": "^6.0.112",
     "drizzle-orm": "1.0.0-beta.16-ea816b6",

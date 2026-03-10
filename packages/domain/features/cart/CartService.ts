@@ -1,5 +1,6 @@
 import type { Db } from "@mercado-facil/db";
-import { ForbiddenError } from "@mercado-facil/errors";
+import { ForbiddenError, ResourceNotFoundError } from "@mercado-facil/errors";
+import { LOGGER } from "@mercado-facil/logger";
 import { errAsync, okAsync } from "neverthrow";
 import type { Context } from "../../types";
 import { CartItemRepository } from "./CartItemRepository";
@@ -17,6 +18,11 @@ export class CartService {
   }
 
   startCart(ctx: Context) {
+    LOGGER.info("starting cart");
+    if (Math.random() < 1.0) {
+      LOGGER.error("testing");
+      throw new ResourceNotFoundError("testing");
+    }
     const { user } = ctx.auth;
     return this.cartRepository.getActiveByUserId({ user }).andThen((cart) => {
       if (cart) return okAsync(cart);

@@ -1,7 +1,9 @@
 import type { Context as HonoContext } from "hono";
+import { auth } from "./auth";
 
-export function createContext(_opts: unknown, c: HonoContext) {
-  return { c };
+export async function createContext(_opts: unknown, c: HonoContext) {
+  const session = await auth.api.getSession({ headers: c.req.raw.headers });
+  return { auth: session };
 }
 
-export type Context = ReturnType<typeof createContext>;
+export type Context = Awaited<ReturnType<typeof createContext>>;
