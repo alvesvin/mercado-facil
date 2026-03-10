@@ -1,15 +1,4 @@
 services:
-  api:
-    build:
-      context: .
-      dockerfile: .docker/api/Dockerfile
-    environment:
-      - ENABLE_SENTRY=false
-      - DATABASE_URL=postgresql://postgres:postgres@db:5432/mercado-facil
-      - SUPABASE_URL=https://ohaoudyyrdvadnvhfqem.supabase.co
-      - SUPABASE_SECRET_KEY=${SUPABASE_SECRET_KEY}
-    depends_on:
-      - db
   db:
     build:
       context: .docker/postgis-18
@@ -18,5 +7,5 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=mercado-facil
-    expose:
-      - 5432
+    ports:
+      - 5432:5432

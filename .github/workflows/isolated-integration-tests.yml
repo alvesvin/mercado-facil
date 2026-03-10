@@ -6,6 +6,8 @@ on:
 
 env:
   SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
+  SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+  ENABLE_SENTRY: false
 
 jobs:
   trpc:
@@ -15,8 +17,12 @@ jobs:
 
       - uses: oven-sh/setup-bun@v2
 
-      - name: Setup
-        run: docker compose -f docker-compose.api-test.yml run --build --rm api bun --filter=@mercado-facil/db db:push
+      - run: bun install
+
+      - name: Up db
+        run: |
+          docker buildx build -f .docker/postgis-18/Dockerfile -t mercado-facil-db .
+          docker run -d --name mercado-facil-db -e POSTGRES_PASSWORD=postgres -p 5432:5432 mercado-facil-db
 
       - name: Run tests
-        run: docker compose -f docker-compose.api-test.yml run --rm api bun --filter=@mercado-facil/trpc run test
+        run: bun --filter=@mercado-facil/trpc run test
