@@ -1,8 +1,8 @@
-import { productService } from "@mercado-facil/domain/features/singletons";
 import {
   getProductWithPriceByBarcodeSaga,
-  ZGetProductWithPriceByBarcodeSagaArgs,
-} from "@mercado-facil/domain/sagas/getProductWithPriceByBarcode";
+  productService,
+} from "@mercado-facil/domain/features/singletons";
+import { ZGetProductWithPriceByBarcodeSagaArgs } from "@mercado-facil/domain/sagas/GetProductWithPriceByBarcodeSaga";
 import { z } from "zod";
 import { procedure, router } from "../trpc";
 import { unwrapAsync } from "../utils";
@@ -14,5 +14,5 @@ export const product = router({
 
   findWithPriceByBarcodeSaga: procedure
     .input(ZGetProductWithPriceByBarcodeSagaArgs)
-    .query(({ input }) => unwrapAsync(getProductWithPriceByBarcodeSaga(input))),
+    .query(({ input }) => unwrapAsync(getProductWithPriceByBarcodeSaga.run(input))),
 });

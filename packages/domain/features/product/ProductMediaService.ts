@@ -5,8 +5,8 @@ import type { CreateProductMediaArgs } from "./types";
 export class ProductMediaService {
   constructor(private readonly productMediaRepository: ProductMediaRepository) {}
 
-  withTransaction(db: Db) {
-    return new ProductMediaService(new ProductMediaRepository(db));
+  static withTransaction(db: Db) {
+    return new ProductMediaService(ProductMediaRepository.withTransaction(db));
   }
 
   create(args: CreateProductMediaArgs) {

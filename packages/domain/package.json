@@ -3,6 +3,9 @@
   "version": "0.0.0",
   "type": "module",
   "private": true,
+  "scripts": {
+    "test": "bun test --bail --randomize --concurrent"
+  },
   "dependencies": {
     "@ai-sdk/google": "^3.0.37",
     "@mercado-facil/db": "workspace:*",

@@ -6,8 +6,8 @@ import type { CreateProductArgs } from "./types";
 export class ProductService {
   constructor(private readonly productRepository: ProductRepository) {}
 
-  withTransaction(db: Db) {
-    return new ProductService(new ProductRepository(db));
+  static withTransaction(db: Db) {
+    return new ProductService(ProductRepository.withTransaction(db));
   }
 
   create(args: Omit<CreateProductArgs, "userId">, ctx: Context) {

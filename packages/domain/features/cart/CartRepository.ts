@@ -14,6 +14,10 @@ import type {
 export class CartRepository {
   constructor(private readonly db: Db) {}
 
+  static withTransaction(db: Db) {
+    return new CartRepository(db);
+  }
+
   index(args: IndexRepositoryArgs) {
     const orderBy =
       args.pagination.order === "asc" ? asc(cartTable.createdAt) : desc(cartTable.createdAt);

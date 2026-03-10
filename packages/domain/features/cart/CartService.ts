@@ -13,8 +13,11 @@ export class CartService {
     private readonly cartItemRepository: CartItemRepository,
   ) {}
 
-  withTransaction(db: Db) {
-    return new CartService(new CartRepository(db), new CartItemRepository(db));
+  static withTransaction(db: Db) {
+    return new CartService(
+      CartRepository.withTransaction(db),
+      CartItemRepository.withTransaction(db),
+    );
   }
 
   startCart(ctx: Context) {

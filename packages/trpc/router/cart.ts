@@ -3,11 +3,8 @@ import {
   ZIndexArgs,
   ZUpdateStoreArgs,
 } from "@mercado-facil/domain/features/cart/types";
-import { cartService } from "@mercado-facil/domain/features/singletons";
-import {
-  registerNewProductSaga,
-  ZRegisterNewProductSagaArgs,
-} from "@mercado-facil/domain/sagas/registerNewProduct";
+import { cartService, registerNewProductSaga } from "@mercado-facil/domain/features/singletons";
+import { ZRegisterNewProductSagaArgs } from "@mercado-facil/domain/sagas/RegisterNewProductSaga";
 import { z } from "zod";
 import { procedure, router } from "../trpc";
 import { unwrapAsync } from "../utils";
@@ -27,7 +24,7 @@ export const cart = router({
 
   reigsterNewProductSaga: procedure
     .input(ZRegisterNewProductSagaArgs)
-    .mutation(({ input, ctx }) => unwrapAsync(registerNewProductSaga(input, ctx))),
+    .mutation(({ input, ctx }) => unwrapAsync(registerNewProductSaga.run(input, ctx))),
 
   addProduct: procedure
     .input(ZCreateCartItemArgs)

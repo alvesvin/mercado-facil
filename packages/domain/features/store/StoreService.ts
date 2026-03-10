@@ -1,14 +1,9 @@
-import type { Db } from "@mercado-facil/db";
 import type { Context } from "../../types";
-import { StoreRepository } from "./StoreRepository";
-import type { CreateStoreArgs, FindNearArgs, SearchStoreArgs } from "./types";
+import type { StoreRepository } from "./StoreRepository";
+import type { CreateStoreArgs, FindNearArgs, GetStoreArgs, SearchStoreArgs } from "./types";
 
 export class StoreService {
   constructor(private readonly storeRepository: StoreRepository) {}
-
-  withTransaction(db: Db) {
-    return new StoreService(new StoreRepository(db));
-  }
 
   create(args: CreateStoreArgs, ctx: Context) {
     const { user } = ctx.auth;
@@ -25,7 +20,8 @@ export class StoreService {
     return this.storeRepository.findNear({ ...args, userId: user.id });
   }
 
-  get(id: string) {
-    return this.storeRepository.get(id);
+  get(args: Omit<GetStoreArgs, "userId">, ctx: Context) {
+    const { user } = ctx.auth;
+    return this.storeRepository.get({ ...args, userId: user.id });
   }
 }
