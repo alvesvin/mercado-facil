@@ -1,4 +1,4 @@
-name: Type Check
+name: Unit tests
 on:
   push:
     branches:
@@ -15,4 +15,4 @@ jobs:
       - name: Install dependencies
         run: bun install
 
-      - run: bun type-check
+      - run: bun run test

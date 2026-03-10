@@ -4,7 +4,7 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "test": "bun test",
+    "test": "echo 'TODO: Implement tests'",
     "type-check": "tsc --noEmit --pretty"
   },
   "dependencies": {

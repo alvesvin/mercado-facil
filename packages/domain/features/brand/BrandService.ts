@@ -5,8 +5,8 @@ import type { CreateBrandArgs } from "./types";
 export class BrandService {
   constructor(private readonly brandRepository: BrandRepository) {}
 
-  withTransaction(db: Db) {
-    return new BrandService(new BrandRepository(db));
+  static withTransaction(db: Db) {
+    return new BrandService(BrandRepository.withTransaction(db));
   }
 
   create(args: CreateBrandArgs) {

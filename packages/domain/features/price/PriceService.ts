@@ -1,7 +1,8 @@
 import type { Db } from "@mercado-facil/db";
-import { okAsync, ResultAsync } from "neverthrow";
+import { ok, okAsync, ResultAsync } from "neverthrow";
 import type { Context } from "../../types";
 import { PriceRepository } from "./PriceRepository";
+import { CanUserCreatePriceSpec } from "./specs/CanUserCreatePriceSpec";
 import type { CreatePriceArgs, FindConsensusArgs } from "./types";
 
 /**
@@ -66,18 +67,24 @@ function removeOutliers(prices: number[]): number[] {
 }
 
 export class PriceService {
-  constructor(private readonly priceRepository: PriceRepository) {}
+  constructor(
+    private readonly priceRepository: PriceRepository,
+    private readonly canUserCreatePriceSpec: CanUserCreatePriceSpec,
+  ) {}
 
-  withTransaction(db: Db) {
-    return new PriceService(new PriceRepository(db));
+  static withTransaction(db: Db) {
+    return new PriceService(
+      PriceRepository.withTransaction(db),
+      CanUserCreatePriceSpec.withTransaction(db),
+    );
   }
 
   create(args: Omit<CreatePriceArgs, "userId">, ctx: Context) {
     const { user } = ctx.auth;
-    return this.priceRepository.create({
-      ...args,
-      userId: user.id,
-    });
+    return this.canUserCreatePriceSpec
+      .check({ ...args, userId: user.id })
+      .andThen(() => this.priceRepository.create(args))
+      .andThen(([price]) => ok(price!));
   }
 
   findConsensus(args: FindConsensusArgs) {

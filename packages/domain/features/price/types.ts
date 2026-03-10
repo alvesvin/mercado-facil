@@ -1,12 +1,14 @@
 import { z } from "zod";
 
+const priceTypeEnum = z.enum(["unit", "per_kg", "per_l"]);
+
 export const ZCreatePriceArgs = z.object({
   storeId: z.uuidv7().nullish(),
   productId: z.uuidv7(),
   userId: z.uuidv7().nullish(),
   price: z.number().positive(),
   currency: z.string(),
-  type: z.enum(["unit", "per_kg", "per_l"]),
+  type: priceTypeEnum,
 });
 export type CreatePriceArgs = z.infer<typeof ZCreatePriceArgs>;
 
@@ -15,8 +17,7 @@ export const ZSearchPriceArgs = z.object({
     productId: z.uuidv7(),
     storeId: z.uuidv7().optional(),
     userId: z.uuidv7().optional(),
-    // TODO: unify these types
-    type: z.enum(["unit", "per_kg", "per_l"]),
+    type: priceTypeEnum.optional(),
   }),
   pagination: z.object({
     page: z.number().positive().default(1),

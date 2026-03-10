@@ -8,6 +8,10 @@ import type { CreateCartItemArgs } from "./types";
 export class CartItemRepository {
   constructor(private readonly db: Db) {}
 
+  static withTransaction(db: Db) {
+    return new CartItemRepository(db);
+  }
+
   create(args: CreateCartItemArgs) {
     return wrap(
       this.db

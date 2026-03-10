@@ -1,6 +1,8 @@
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { db } from "@mercado-facil/db";
 import { getSupabaseServerClient } from "@mercado-facil/supabase/server";
+import { GetProductWithPriceByBarcodeSaga } from "../sagas/GetProductWithPriceByBarcodeSaga";
+import { RegisterNewProductSaga } from "../sagas/RegisterNewProductSaga";
 import { AiService } from "./ai/AiService";
 import { BlobService } from "./blob/BlobService";
 import { BrandRepository } from "./brand/BrandRepository";
@@ -12,6 +14,7 @@ import { EventRepository } from "./event/EventRepository";
 import { EventService } from "./event/EventService";
 import { PriceRepository } from "./price/PriceRepository";
 import { PriceService } from "./price/PriceService";
+import { CanUserCreatePriceSpec } from "./price/specs/CanUserCreatePriceSpec";
 import { ProductMediaRepository } from "./product/ProductMediaRepository";
 import { ProductMediaService } from "./product/ProductMediaService";
 import { ProductRepository } from "./product/ProductRepository";
@@ -29,7 +32,8 @@ export const brandRepository = new BrandRepository(db);
 export const brandService = new BrandService(brandRepository);
 
 export const priceRepository = new PriceRepository(db);
-export const priceService = new PriceService(priceRepository);
+const canUserCreatePriceSpec = new CanUserCreatePriceSpec(priceRepository);
+export const priceService = new PriceService(priceRepository, canUserCreatePriceSpec);
 
 export const eventRepository = new EventRepository(db);
 export const eventService = new EventService(eventRepository);
@@ -45,3 +49,6 @@ export const productMediaService = new ProductMediaService(productMediaRepositor
 
 export const storeRepository = new StoreRepository(db);
 export const storeService = new StoreService(storeRepository);
+
+export const getProductWithPriceByBarcodeSaga = new GetProductWithPriceByBarcodeSaga(db);
+export const registerNewProductSaga = new RegisterNewProductSaga(db);

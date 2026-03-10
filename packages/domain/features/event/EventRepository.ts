@@ -7,6 +7,10 @@ import type { CreateEventArgs } from "./types";
 export class EventRepository {
   constructor(private readonly db: Db) {}
 
+  static withTransaction(db: Db) {
+    return new EventRepository(db);
+  }
+
   create(args: CreateEventArgs) {
     return wrap(this.db.insert(eventTable).values(args).returning()).andThen(([event]) =>
       ok(event!),

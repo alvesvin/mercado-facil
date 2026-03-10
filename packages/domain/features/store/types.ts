@@ -34,3 +34,9 @@ export const ZCreateStoreArgs = z.object({
   userId: z.uuidv7().nullish(),
 });
 export type CreateStoreArgs = z.infer<typeof ZCreateStoreArgs>;
+
+export const ZGetStoreArgs = z.object({
+  id: z.uuidv7(),
+  userId: z.uuidv7().nullish(),
+});
+export type GetStoreArgs = z.infer<typeof ZGetStoreArgs>;
