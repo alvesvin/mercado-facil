@@ -1,16 +1,15 @@
+import type { Db } from "@mercado-facil/db";
 import { eventTable } from "@mercado-facil/db/schema";
-import { IDB } from "@mercado-facil/db/service";
-import { Effect } from "effect";
+import { ok } from "neverthrow";
+import { wrap } from "../../utils";
 import type { CreateEventArgs } from "./types";
 
-export class EventRepository extends Effect.Service<EventRepository>()("EventRepository", {
-  effect: Effect.gen(function* () {
-    return {
-      create: (args: CreateEventArgs) =>
-        Effect.gen(function* () {
-          const db = yield* IDB;
-          return (yield* db.insert(eventTable).values(args).returning())[0]!;
-        }),
-    };
-  }),
-}) {}
+export class EventRepository {
+  constructor(private readonly db: Db) {}
+
+  create(args: CreateEventArgs) {
+    return wrap(this.db.insert(eventTable).values(args).returning()).andThen(([event]) =>
+      ok(event!),
+    );
+  }
+}

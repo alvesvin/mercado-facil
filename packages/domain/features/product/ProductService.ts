@@ -1,13 +1,21 @@
-import { Effect } from "effect";
+import type { Db } from "@mercado-facil/db";
+import type { Context } from "../../types";
 import { ProductRepository } from "./ProductRepository";
+import type { CreateProductArgs } from "./types";
 
-export class ProductService extends Effect.Service<ProductService>()("ProductService", {
-  effect: Effect.gen(function* () {
-    const productRepository = yield* ProductRepository;
+export class ProductService {
+  constructor(private readonly productRepository: ProductRepository) {}
 
-    return {
-      create: productRepository.create.bind(productRepository),
-      findByBarcode: productRepository.findByBarcode.bind(productRepository),
-    };
-  }),
-}) {}
+  withTransaction(db: Db) {
+    return new ProductService(new ProductRepository(db));
+  }
+
+  create(args: Omit<CreateProductArgs, "userId">, ctx: Context) {
+    const { user } = ctx.auth;
+    return this.productRepository.create({ ...args, userId: user.id });
+  }
+
+  findByBarcode(barcode: string) {
+    return this.productRepository.findByBarcode(barcode);
+  }
+}

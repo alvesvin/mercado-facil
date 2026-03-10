@@ -1,32 +1,26 @@
+import type { Db } from "@mercado-facil/db";
 import { brandTable } from "@mercado-facil/db/schema";
-import { IDB } from "@mercado-facil/db/service";
-import { eq } from "drizzle-orm";
-import { Effect } from "effect";
+import { sql } from "drizzle-orm";
+import { ok } from "neverthrow";
+import { wrap } from "../../utils";
 import type { CreateBrandArgs } from "./types";
 
-export class BrandRepository extends Effect.Service<BrandRepository>()("BrandRepository", {
-  effect: Effect.gen(function* () {
-    return {
-      create: (args: CreateBrandArgs) =>
-        Effect.gen(function* () {
-          const db = yield* IDB;
-          let [brand] = yield* db
-            .insert(brandTable)
-            .values({
-              id: args.name,
-              name: args.name,
-            })
-            .onConflictDoNothing()
-            .returning();
-          if (!brand) {
-            brand = (yield* db
-              .select()
-              .from(brandTable)
-              .where(eq(brandTable.id, args.name))
-              .limit(1))[0];
-          }
-          return brand!;
-        }),
-    };
-  }),
-}) {}
+export class BrandRepository {
+  constructor(private readonly db: Db) {}
+
+  create(args: CreateBrandArgs) {
+    return wrap(
+      this.db
+        .insert(brandTable)
+        .values({
+          id: args.name,
+          name: args.name,
+        })
+        .onConflictDoUpdate({
+          target: [brandTable.id],
+          set: { name: sql`excluded.name` },
+        })
+        .returning(),
+    ).andThen(([brand]) => ok(brand!));
+  }
+}

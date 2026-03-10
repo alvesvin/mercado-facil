@@ -2,26 +2,26 @@ import type { UpdateCartStoreFn } from "@mercado-facil/trpc-types";
 import type { ScanWorkflowEmitter } from "./machines/scan-workflow.machine";
 
 export function handleCartAlreadySet(
-  deps: { cart: { storeId: string } },
+  deps: { cart: { store: { id: string } } },
   sideEffects: { send: ScanWorkflowEmitter },
 ) {
-  sideEffects.send({ type: "STORE_FOUND", store: { id: deps.cart.storeId } });
+  sideEffects.send({ type: "STORE_FOUND", store: { id: deps.cart.store.id } });
 }
 
-export function shouldFetchNearbyStores(cart?: { storeId: string | null }) {
+export function shouldFetchNearbyStores(cart?: { store: { id: string } | null }) {
   // Means cart is loaded and has no store id
-  return Boolean(cart && cart.storeId === null);
+  return Boolean(cart && cart.store === null);
 }
 
 export function shouldTriggerStoreFoundFromState(cart?: {
-  storeId: string | null;
-}): cart is { storeId: string } {
+  store: { id: string } | null;
+}): cart is { store: { id: string } } {
   // Means cart is loaded and has a store id
-  return Boolean(cart?.storeId);
+  return Boolean(cart?.store);
 }
 
 export function shouldTriggerStoreNotFoundFromState(args: {
-  cart?: { storeId: string | null };
+  cart?: { store: { id: string } | null };
   store?: { id: string } | null;
   isRefetching: boolean;
 }) {

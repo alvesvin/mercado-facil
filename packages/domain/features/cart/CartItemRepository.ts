@@ -1,26 +1,23 @@
+import type { Db } from "@mercado-facil/db";
 import { cartItemTable } from "@mercado-facil/db/schema";
-import { IDB } from "@mercado-facil/db/service";
 import { sql } from "drizzle-orm";
-import { Effect } from "effect";
+import { ok } from "neverthrow";
+import { wrap } from "../../utils";
 import type { CreateCartItemArgs } from "./types";
 
-export class CartItemRepository extends Effect.Service<CartItemRepository>()("CartItemRepository", {
-  effect: Effect.gen(function* () {
-    return {
-      create: (args: CreateCartItemArgs) =>
-        Effect.gen(function* () {
-          const db = yield* IDB;
-          const [cartItem] = yield* db
-            .insert(cartItemTable)
-            .values(args)
-            .onConflictDoUpdate({
-              target: [cartItemTable.cartId, cartItemTable.productId],
-              set: { quantity: sql`excluded.quantity + ${args.quantity}` },
-            })
-            .returning()
-            .pipe(Effect.tapErrorCause(Effect.logError));
-          return cartItem!;
-        }),
-    };
-  }),
-}) {}
+export class CartItemRepository {
+  constructor(private readonly db: Db) {}
+
+  create(args: CreateCartItemArgs) {
+    return wrap(
+      this.db
+        .insert(cartItemTable)
+        .values(args)
+        .onConflictDoUpdate({
+          target: [cartItemTable.cartId, cartItemTable.productId],
+          set: { quantity: sql`excluded.quantity + ${args.quantity}` },
+        })
+        .returning(),
+    ).andThen(([cartItem]) => ok(cartItem!));
+  }
+}

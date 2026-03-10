@@ -1,18 +1,10 @@
-import { DB } from "@mercado-facil/db/service";
-import { BrandService } from "@mercado-facil/domain/features/brand/BrandService";
 import { ZCreateBrandArgs } from "@mercado-facil/domain/features/brand/types";
-import { LiveRuntime } from "@mercado-facil/domain/runtime/live";
-import { Effect } from "effect";
+import { brandService } from "@mercado-facil/domain/features/singletons";
 import { procedure, router } from "../trpc";
+import { unwrapAsync } from "../utils";
 
 export const brand = router({
-  create: procedure.input(ZCreateBrandArgs).mutation(({ input }) =>
-    LiveRuntime.runPromise(
-      Effect.gen(function* () {
-        const brandService = yield* BrandService;
-        const brand = yield* brandService.create(input);
-        return brand;
-      }).pipe(Effect.provide(DB)),
-    ),
-  ),
+  create: procedure
+    .input(ZCreateBrandArgs)
+    .mutation(({ input }) => unwrapAsync(brandService.create(input))),
 });

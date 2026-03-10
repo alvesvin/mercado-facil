@@ -1,20 +1,15 @@
+import type { Db } from "@mercado-facil/db";
 import { productMediaTable } from "@mercado-facil/db/schema";
-import { IDB } from "@mercado-facil/db/service";
-import { Effect } from "effect";
+import { ok } from "neverthrow";
+import { wrap } from "../../utils";
 import type { CreateProductMediaArgs } from "./types";
 
-export class ProductMediaRepository extends Effect.Service<ProductMediaRepository>()(
-  "ProductMediaRepository",
-  {
-    effect: Effect.gen(function* () {
-      return {
-        create: (args: CreateProductMediaArgs) =>
-          Effect.gen(function* () {
-            const db = yield* IDB;
-            const [productMedia] = yield* db.insert(productMediaTable).values(args).returning();
-            return productMedia!;
-          }),
-      };
-    }),
-  },
-) {}
+export class ProductMediaRepository {
+  constructor(private readonly db: Db) {}
+
+  create(args: CreateProductMediaArgs) {
+    return wrap(this.db.insert(productMediaTable).values(args).returning()).andThen(
+      ([productMedia]) => ok(productMedia!),
+    );
+  }
+}

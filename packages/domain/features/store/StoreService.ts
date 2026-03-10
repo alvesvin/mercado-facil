@@ -1,54 +1,31 @@
-import { Effect, Either } from "effect";
-import { RequestContext } from "../../services/RequestContext";
+import type { Db } from "@mercado-facil/db";
+import type { Context } from "../../types";
 import { StoreRepository } from "./StoreRepository";
 import type { CreateStoreArgs, FindNearArgs, SearchStoreArgs } from "./types";
 
-export class StoreService extends Effect.Service<StoreService>()("StoreService", {
-  effect: Effect.gen(function* () {
-    const storeRepository = yield* StoreRepository;
+export class StoreService {
+  constructor(private readonly storeRepository: StoreRepository) {}
 
-    return {
-      create: (args: Omit<CreateStoreArgs, "userId">) =>
-        Effect.gen(function* () {
-          const ctx = yield* RequestContext;
-          const user = yield* ctx.auth.pipe(
-            Effect.map((ctx) => ctx.user),
-            Effect.either,
-          );
-          const store = yield* storeRepository.create({
-            ...args,
-            userId: Either.isRight(user) ? user.right.id : undefined,
-          });
-          return store;
-        }),
+  withTransaction(db: Db) {
+    return new StoreService(new StoreRepository(db));
+  }
 
-      search: (args: Omit<SearchStoreArgs, "userId">) =>
-        Effect.gen(function* () {
-          const ctx = yield* RequestContext;
-          const user = yield* ctx.auth.pipe(
-            Effect.map((ctx) => ctx.user),
-            Effect.either,
-          );
-          const stores = yield* storeRepository.search({
-            ...args,
-            userId: Either.isRight(user) ? user.right.id : undefined,
-          });
-          return stores;
-        }),
-      findNear: (args: Omit<FindNearArgs, "userId">) =>
-        Effect.gen(function* () {
-          const ctx = yield* RequestContext;
-          const user = yield* ctx.auth.pipe(
-            Effect.map((ctx) => ctx.user),
-            Effect.either,
-          );
-          const store = yield* storeRepository.findNear({
-            ...args,
-            userId: Either.isRight(user) ? user.right.id : undefined,
-          });
-          return store;
-        }),
-      findById: storeRepository.findById.bind(storeRepository),
-    };
-  }),
-}) {}
+  create(args: CreateStoreArgs, ctx: Context) {
+    const { user } = ctx.auth;
+    return this.storeRepository.create({ ...args, userId: user.id });
+  }
+
+  search(args: Omit<SearchStoreArgs, "userId">, ctx: Context) {
+    const { user } = ctx.auth;
+    return this.storeRepository.search({ ...args, userId: user.id });
+  }
+
+  findNear(args: Omit<FindNearArgs, "userId">, ctx: Context) {
+    const { user } = ctx.auth;
+    return this.storeRepository.findNear({ ...args, userId: user.id });
+  }
+
+  get(id: string) {
+    return this.storeRepository.get(id);
+  }
+}

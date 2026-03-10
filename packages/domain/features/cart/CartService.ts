@@ -1,60 +1,56 @@
+import type { Db } from "@mercado-facil/db";
 import { ForbiddenError } from "@mercado-facil/errors";
-import { Effect } from "effect";
-import { RequestContext } from "../../services/RequestContext";
+import { errAsync, okAsync } from "neverthrow";
+import type { Context } from "../../types";
 import { CartItemRepository } from "./CartItemRepository";
 import { CartRepository } from "./CartRepository";
 import type { CreateCartItemArgs, IndexArgs } from "./types";
 
-export class CartService extends Effect.Service<CartService>()("CartService", {
-  effect: Effect.gen(function* () {
-    const cartRepository = yield* CartRepository;
-    const cartItemRepository = yield* CartItemRepository;
+export class CartService {
+  constructor(
+    private readonly cartRepository: CartRepository,
+    private readonly cartItemRepository: CartItemRepository,
+  ) {}
 
-    return {
-      startCart: () =>
-        Effect.gen(function* () {
-          const ctx = yield* RequestContext;
-          const { user } = yield* ctx.auth;
-          const cart = yield* cartRepository.getActiveByUserId({
-            user,
-          });
-          if (cart) return cart;
-          const newCart = yield* cartRepository.create({ user });
-          return newCart;
-        }),
+  withTransaction(db: Db) {
+    return new CartService(new CartRepository(db), new CartItemRepository(db));
+  }
 
-      updateStore: cartRepository.updateStore.bind(cartRepository),
+  startCart(ctx: Context) {
+    const { user } = ctx.auth;
+    return this.cartRepository.getActiveByUserId({ user }).andThen((cart) => {
+      if (cart) return okAsync(cart);
+      return this.cartRepository.create({ user });
+    });
+  }
 
-      findById: cartRepository.findById.bind(cartRepository),
+  updateStore(...args: Parameters<CartRepository["updateStore"]>) {
+    return this.cartRepository.updateStore(...args);
+  }
 
-      index: (args: IndexArgs) =>
-        Effect.gen(function* () {
-          const ctx = yield* RequestContext;
-          const { user } = yield* ctx.auth;
+  get(id: string) {
+    return this.cartRepository.get(id);
+  }
 
-          return yield* cartRepository.index({
-            filter: { userId: user.id },
-            pagination: args.pagination,
-          });
-        }),
+  index(args: IndexArgs, ctx: Context) {
+    const { user } = ctx.auth;
+    return this.cartRepository.index({
+      filter: { userId: user.id },
+      pagination: args.pagination,
+    });
+  }
 
-      addProduct: (args: CreateCartItemArgs) =>
-        Effect.gen(function* () {
-          const ctx = yield* RequestContext;
-          const { user } = yield* ctx.auth;
+  addProduct(args: CreateCartItemArgs, ctx: Context) {
+    const { user } = ctx.auth;
 
-          const cart = yield* cartRepository.findById({ id: args.cartId });
+    return this.cartRepository.get(args.cartId).andThen((cart) => {
+      if (cart.userId !== user.id) {
+        return errAsync(
+          new ForbiddenError("Você não tem permissão para adicionar produtos a este carrinho"),
+        );
+      }
 
-          if (cart.userId !== user.id) {
-            return yield* Effect.fail(
-              new ForbiddenError("Você não tem permissão para adicionar produtos a este carrinho"),
-            );
-          }
-
-          const cartItem = yield* cartItemRepository.create(args);
-
-          return cartItem;
-        }),
-    };
-  }),
-}) {}
+      return this.cartItemRepository.create(args);
+    });
+  }
+}

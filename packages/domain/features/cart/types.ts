@@ -23,11 +23,6 @@ export const ZUpdateStoreArgs = z.object({
 
 export type UpdateStoreArgs = z.infer<typeof ZUpdateStoreArgs>;
 
-export const ZFindByIdArgs = z.object({
-  id: z.uuidv7(),
-});
-export type FindByIdArgs = z.infer<typeof ZFindByIdArgs>;
-
 export const ZCreateCartItemArgs = z.object({
   cartId: z.uuidv7(),
   productId: z.uuidv7(),
@@ -60,3 +55,6 @@ export const ZIndexArgs = z.object({
   pagination: ZIndexPagination,
 });
 export type IndexArgs = z.infer<typeof ZIndexArgs>;
+
+export const ZFindByIdArgs = z.object({ id: z.uuidv7() });
+export type FindByIdArgs = z.infer<typeof ZFindByIdArgs>;

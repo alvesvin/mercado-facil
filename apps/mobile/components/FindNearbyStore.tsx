@@ -44,7 +44,7 @@ export function FindNearByStore() {
 
   // 1. Cart has a store id, so we emit a STORE_FOUND event
   if (shouldTriggerStoreFoundFromState(cart)) {
-    return handleCartAlreadySet({ cart: { storeId: cart.storeId } }, { send: actor.send });
+    return handleCartAlreadySet({ cart }, { send: actor.send });
   }
 
   // 3. If no store is found, we emit a STORE_NOT_FOUND event

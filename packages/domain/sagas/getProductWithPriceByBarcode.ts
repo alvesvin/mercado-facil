@@ -1,8 +1,9 @@
-import { withTransaction } from "@mercado-facil/db/utils";
-import { Effect } from "effect";
+import { db } from "@mercado-facil/db";
+import type { DrizzleQueryError } from "drizzle-orm";
+import { ResultAsync } from "neverthrow";
 import { z } from "zod";
-import { PriceService } from "../features/price/PriceService";
-import { ProductService } from "../features/product/ProductService";
+import { priceService, productService } from "../features/singletons";
+import { unwrapAsync } from "../utils";
 
 export const ZGetProductWithPriceByBarcodeSagaArgs = z.object({
   barcode: z.string(),
@@ -12,20 +13,27 @@ export type GetProductWithPriceByBarcodeSagaArgs = z.infer<
   typeof ZGetProductWithPriceByBarcodeSagaArgs
 >;
 
-export const getProductWithPriceByBarcodeSaga = (args: GetProductWithPriceByBarcodeSagaArgs) =>
-  withTransaction(
-    Effect.gen(function* () {
-      const productService = yield* ProductService;
-      const priceService = yield* PriceService;
-      const product = yield* productService.findByBarcode({ barcode: args.barcode });
+export function getProductWithPriceByBarcodeSaga(args: GetProductWithPriceByBarcodeSagaArgs) {
+  return ResultAsync.fromPromise(
+    db.transaction(async (tx) => {
+      const productServiceTx = productService.withTransaction(tx);
+      const priceServiceTx = priceService.withTransaction(tx);
+
+      const product = await productServiceTx.findByBarcode(args.barcode).unwrapOr(null);
       if (!product) return null;
-      const prices = yield* priceService.findConsensus({
-        productId: product.id,
-        storeId: args.storeId,
-      });
+
+      const prices = await unwrapAsync(
+        priceServiceTx.findConsensus({
+          productId: product.id,
+          storeId: args.storeId,
+        }),
+      );
+
       return {
         product,
         prices,
       };
     }),
+    (error) => error as DrizzleQueryError,
   );
+}

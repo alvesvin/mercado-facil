@@ -1,12 +1,15 @@
-import { Effect } from "effect";
+import type { Db } from "@mercado-facil/db";
 import { BrandRepository } from "./BrandRepository";
+import type { CreateBrandArgs } from "./types";
 
-export class BrandService extends Effect.Service<BrandService>()("BrandService", {
-  effect: Effect.gen(function* () {
-    const brandRepository = yield* BrandRepository;
+export class BrandService {
+  constructor(private readonly brandRepository: BrandRepository) {}
 
-    return {
-      create: brandRepository.create.bind(brandRepository),
-    };
-  }),
-}) {}
+  withTransaction(db: Db) {
+    return new BrandService(new BrandRepository(db));
+  }
+
+  create(args: CreateBrandArgs) {
+    return this.brandRepository.create(args);
+  }
+}

@@ -149,6 +149,9 @@ export const quantityUnitEnum = pgEnum("quantity_unit", [
 
 export const productTable = pgTable("product", {
   ...COMMON_FIELDS,
+  userId: uuid("user_id").references(() => userTable.id, {
+    onDelete: "set null",
+  }),
   barcode: text("barcode").notNull().unique(),
   name: text("name").notNull(),
   brand: text("brand").references(() => brandTable.id, {

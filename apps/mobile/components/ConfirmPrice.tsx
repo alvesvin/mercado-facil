@@ -23,7 +23,7 @@ export function ConfirmPrice() {
   async function onConfirm() {
     try {
       await handleConfirmPrice(
-        { value, prices, product, cart: { storeId: cart.storeId! } },
+        { value, prices, product, cart: { storeId: cart.store!.id } },
         { createPrice, send: actor.send },
       );
     } catch (error) {

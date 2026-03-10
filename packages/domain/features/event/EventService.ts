@@ -1,12 +1,15 @@
-import { Effect } from "effect";
+import type { Db } from "@mercado-facil/db";
 import { EventRepository } from "./EventRepository";
+import type { CreateEventArgs } from "./types";
 
-export class EventService extends Effect.Service<EventService>()("EventService", {
-  effect: Effect.gen(function* () {
-    const eventRepository = yield* EventRepository;
+export class EventService {
+  constructor(private readonly eventRepository: EventRepository) {}
 
-    return {
-      create: eventRepository.create.bind(eventRepository),
-    };
-  }),
-}) {}
+  withTransaction(db: Db) {
+    return new EventService(new EventRepository(db));
+  }
+
+  create(args: CreateEventArgs) {
+    return this.eventRepository.create(args);
+  }
+}

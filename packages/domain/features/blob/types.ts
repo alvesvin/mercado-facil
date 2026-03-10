@@ -5,7 +5,7 @@ export const ZUploadFileArgs = z.object({
   path: z.string(),
   file: z.object({
     base64: z.base64(),
-    mimeType: z.string().nullish(),
+    mimeType: z.string(),
   }),
   upsert: z.boolean().optional(),
 });

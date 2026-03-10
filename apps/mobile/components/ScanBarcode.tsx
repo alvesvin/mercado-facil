@@ -25,7 +25,7 @@ export function ScanBarcode() {
 
   function onCodeScanned(barcode: string) {
     handleCodeScanned(
-      { barcode: barcode, storeId: cart.storeId! },
+      { barcode: barcode, storeId: cart.store!.id },
       {
         scanBarcodeEmit,
         scanWorkflowEmit: actor.send,

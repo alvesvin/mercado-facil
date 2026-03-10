@@ -7,11 +7,8 @@
     "db:push": "bun --bun drizzle-kit push"
   },
   "dependencies": {
-    "@effect/sql-pg": "^0.50.3",
-    "@types/pg": "^8.18.0",
     "drizzle-orm": "1.0.0-beta.16-ea816b6",
-    "effect": "^3.19.19",
-    "pg": "^8.20.0"
+    "postgres": "^3.4.8"
   },
   "devDependencies": {
     "@mercado-facil/typescript-config": "workspace:*",

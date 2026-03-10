@@ -1,15 +1,15 @@
-import { Effect } from "effect";
+import type { Db } from "@mercado-facil/db";
 import { ProductMediaRepository } from "./ProductMediaRepository";
+import type { CreateProductMediaArgs } from "./types";
 
-export class ProductMediaService extends Effect.Service<ProductMediaService>()(
-  "ProductMediaService",
-  {
-    effect: Effect.gen(function* () {
-      const productMediaRepository = yield* ProductMediaRepository;
+export class ProductMediaService {
+  constructor(private readonly productMediaRepository: ProductMediaRepository) {}
 
-      return {
-        create: productMediaRepository.create.bind(productMediaRepository),
-      };
-    }),
-  },
-) {}
+  withTransaction(db: Db) {
+    return new ProductMediaService(new ProductMediaRepository(db));
+  }
+
+  create(args: CreateProductMediaArgs) {
+    return this.productMediaRepository.create(args);
+  }
+}

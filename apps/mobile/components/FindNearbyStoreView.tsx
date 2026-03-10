@@ -5,7 +5,7 @@ import { Text } from "@/components/ui/text";
 import NearbyStoreLoadingState from "./NearbyStoreLoadingState";
 
 export function FindNearbyStoreView(props: {
-  cart?: { storeId: string | null };
+  cart?: { store: { id: string } | null };
   store?: { name: string; city: string | null; address: string | null } | null;
   isLoading: boolean;
   isUpdatingCartStore: boolean;

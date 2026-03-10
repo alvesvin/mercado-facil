@@ -1,10 +1,9 @@
 import { createServerClient } from "@supabase/ssr";
-import { Effect } from "effect";
 
 const supabaseUrl = process.env.SUPABASE_URL!;
 const supabaseSecretKey = process.env.SUPABASE_SECRET_KEY!;
 
-export const getSupabaseServerClient = Effect.gen(function* () {
+export const getSupabaseServerClient = () => {
   const supabase = createServerClient(supabaseUrl, supabaseSecretKey, {
     cookies: {
       getAll: () => [],
@@ -12,4 +11,5 @@ export const getSupabaseServerClient = Effect.gen(function* () {
     },
   });
   return supabase;
-});
+};
+export type SupabaseServerClient = ReturnType<typeof getSupabaseServerClient>;

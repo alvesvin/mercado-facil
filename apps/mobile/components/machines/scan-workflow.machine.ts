@@ -3,13 +3,14 @@ import type {
   CommonProps,
   PriceSelect,
   ProductInput,
+  StoreSelect,
 } from "@mercado-facil/domain-types";
 import { createActorContext } from "@xstate/react";
 import { assign, fromPromise, setup } from "xstate";
 import { api } from "@/lib/api";
 import { queryClient } from "@/lib/tanstack-query";
 
-type Cart = Pick<CartSelect, "id" | "storeId">;
+type Cart = Pick<CartSelect, "id"> & { store: Pick<StoreSelect, "id" | "name"> | null };
 type Product = Partial<Omit<ProductInput, CommonProps>> & {
   id: string;
   barcode: string;
@@ -94,12 +95,12 @@ export const scanWorkflowMachine = setup({
         src: "getCart",
         onDone: [
           {
-            guard: ({ event }) => !!event.output.storeId,
+            guard: ({ event }) => !!event.output.store,
             actions: assign({ cart: ({ event }) => event.output }),
             target: "scan",
           },
           {
-            guard: ({ event }) => !event.output.storeId,
+            guard: ({ event }) => !event.output.store,
             actions: assign({ cart: ({ event }) => event.output }),
             target: "findNearbyStore",
           },

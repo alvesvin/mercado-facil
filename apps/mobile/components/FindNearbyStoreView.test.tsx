@@ -5,7 +5,7 @@ describe("FindNearbyStoreView", () => {
   it("should render", () => {
     render(
       <FindNearbyStoreView
-        cart={{ storeId: "1" }}
+        cart={{ store: { id: "1" } }}
         store={{ name: "Store 1", city: "City 1", address: "Address 1" }}
         isLoading={false}
         isUpdatingCartStore={false}
@@ -18,7 +18,7 @@ describe("FindNearbyStoreView", () => {
   it("should render loading state when loading", () => {
     render(
       <FindNearbyStoreView
-        cart={{ storeId: "1" }}
+        cart={{ store: { id: "1" } }}
         store={null}
         isLoading={true}
         isUpdatingCartStore={false}
@@ -32,7 +32,7 @@ describe("FindNearbyStoreView", () => {
   it("should render store details when store is found", () => {
     render(
       <FindNearbyStoreView
-        cart={{ storeId: "1" }}
+        cart={{ store: { id: "1" } }}
         store={{ name: "Store 1", city: "City 1", address: "Address 1" }}
         isLoading={false}
         isUpdatingCartStore={false}
@@ -47,7 +47,7 @@ describe("FindNearbyStoreView", () => {
   it("should render updating cart store state when updating cart store", () => {
     render(
       <FindNearbyStoreView
-        cart={{ storeId: "1" }}
+        cart={{ store: { id: "1" } }}
         store={{ name: "Store 1", city: "City 1", address: "Address 1" }}
         isLoading={false}
         isUpdatingCartStore={true}

@@ -1,10 +1,5 @@
 import { z } from "zod";
 
-export const ZFindByBarcodeArgs = z.object({
-  barcode: z.string(),
-});
-export type FindByBarcodeArgs = z.infer<typeof ZFindByBarcodeArgs>;
-
 export const ZProductQuantityUnitEnum = z.enum([
   "unit",
   "kg",
@@ -27,6 +22,7 @@ export const ZCreateProductArgs = z.object({
   quantityUnit: ZProductQuantityUnitEnum,
   category: z.string().nullish(),
   subCategory: z.string().nullish(),
+  userId: z.uuidv7().nullish(),
 });
 export type CreateProductArgs = z.infer<typeof ZCreateProductArgs>;
 

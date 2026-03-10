@@ -1,6 +1,6 @@
-import { createGoogleGenerativeAI } from "@ai-sdk/google";
+import type { GoogleGenerativeAIProvider } from "@ai-sdk/google";
 import { generateText, Output } from "ai";
-import { Effect, Either } from "effect";
+import { ResultAsync } from "neverthrow";
 import type { GenerateProductInfoArgs } from "./types";
 import { ZAiProductInfo } from "./types";
 
@@ -14,50 +14,35 @@ Não inclua o sabor no nome do produto.
 
 O nome do produto deve conter no máximo 2 a 3 palavras.`;
 
-export class AiService extends Effect.Service<AiService>()("AiService", {
-  effect: Effect.gen(function* () {
-    const apiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY!;
-    const google = createGoogleGenerativeAI({ apiKey });
+export class AiService {
+  constructor(private readonly google: GoogleGenerativeAIProvider) {}
 
-    return {
-      generateProductInfo: (args: GenerateProductInfoArgs) =>
-        Effect.gen(function* () {
-          yield* Effect.logInfo("Generating product info");
-
-          const result = yield* Effect.tryPromise(() =>
-            generateText({
-              model: google("gemini-3.1-flash-lite-preview"),
-              messages: [
-                { role: "system", content: GEN_PRODUCT_INFO_SYSTEM_PROMPT },
-                {
-                  role: "user",
-                  content: [
-                    ...args.images.map(({ base64, mime }) => ({
-                      type: "image" as const,
-                      image: base64,
-                      mediaType: mime,
-                    })),
-                    {
-                      type: "text",
-                      text: "Gere as informações do produto baseado nas fotos fornecidas.",
-                    },
-                  ],
-                },
-              ],
-              output: Output.object({
-                schema: ZAiProductInfo,
-              }),
-            }),
-          ).pipe(Effect.either);
-
-          if (Either.isLeft(result)) {
-            yield* Effect.logError("Failed to generate product info", result.left.error);
-            return null;
-          } else {
-            yield* Effect.logInfo("Product info generated successfully");
-            return result.right.output;
-          }
-        }).pipe(Effect.withLogSpan("generateProductInfo")),
-    };
-  }),
-}) {}
+  generateProductInfo(args: GenerateProductInfoArgs) {
+    return ResultAsync.fromPromise(
+      generateText({
+        model: this.google("gemini-3.1-flash-lite-preview"),
+        messages: [
+          { role: "system", content: GEN_PRODUCT_INFO_SYSTEM_PROMPT },
+          {
+            role: "user",
+            content: [
+              ...args.images.map(({ base64, mime }) => ({
+                type: "image" as const,
+                image: base64,
+                mediaType: mime,
+              })),
+              {
+                type: "text",
+                text: "Gere as informações do produto baseado nas fotos fornecidas.",
+              },
+            ],
+          },
+        ],
+        output: Output.object({
+          schema: ZAiProductInfo,
+        }),
+      }),
+      (error) => error as Error,
+    ).map(({ output }) => output);
+  }
+}

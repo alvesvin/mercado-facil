@@ -9,7 +9,7 @@ import {
 describe("handleCartAlreadySet", () => {
   it("should send a STORE_FOUND event", () => {
     const send = jest.fn();
-    handleCartAlreadySet({ cart: { storeId: "1" } }, { send });
+    handleCartAlreadySet({ cart: { store: { id: "1" } } }, { send });
     expect(send).toHaveBeenCalledWith({ type: "STORE_FOUND", store: { id: "1" } });
   });
 });
@@ -33,11 +33,11 @@ describe("handleConfirmStore", () => {
 
 describe("shouldFetchNearbyStores", () => {
   it("should return true if the cart store id is null", () => {
-    expect(shouldFetchNearbyStores({ storeId: null })).toBe(true);
+    expect(shouldFetchNearbyStores({ store: null })).toBe(true);
   });
 
   it("should return false if the cart store id is not null", () => {
-    expect(shouldFetchNearbyStores({ storeId: "1" })).toBe(false);
+    expect(shouldFetchNearbyStores({ store: { id: "1" } })).toBe(false);
   });
 
   it("should return false if the cart not loaded", () => {
@@ -49,7 +49,7 @@ describe("shouldTriggerStoreNotFoundFromState", () => {
   it("should return true if cart loaded and store not found", () => {
     expect(
       shouldTriggerStoreNotFoundFromState({
-        cart: { storeId: null },
+        cart: { store: null },
         store: null,
         isRefetching: false,
       }),
@@ -59,14 +59,14 @@ describe("shouldTriggerStoreNotFoundFromState", () => {
   it("should return false if cart loaded and store is loading", () => {
     expect(
       shouldTriggerStoreNotFoundFromState({
-        cart: { storeId: null },
+        cart: { store: null },
         store: undefined,
         isRefetching: false,
       }),
     ).toBe(false);
     expect(
       shouldTriggerStoreNotFoundFromState({
-        cart: { storeId: null },
+        cart: { store: null },
         store: null,
         isRefetching: true,
       }),

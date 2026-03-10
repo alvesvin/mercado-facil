@@ -1,15 +1,17 @@
-import { withTransaction } from "@mercado-facil/db/utils";
-import { Effect } from "effect";
+import { type DrizzleQueryError, db } from "@mercado-facil/db";
+import { ResultAsync } from "neverthrow";
 import { z } from "zod";
-import { BlobService } from "../features/blob/BlobService";
-import { BrandService } from "../features/brand/BrandService";
-import { CartService } from "../features/cart/CartService";
-import { PriceService } from "../features/price/PriceService";
-import { ProductMediaService } from "../features/product/ProductMediaService";
-import { ProductService } from "../features/product/ProductService";
 import { ZProductQuantityUnitEnum } from "../features/product/types";
-import { StoreService } from "../features/store/StoreService";
-import { RequestContext } from "../services/RequestContext";
+import {
+  blobService,
+  brandService,
+  cartService,
+  priceService,
+  productMediaService,
+  productService,
+} from "../features/singletons";
+import type { Context } from "../types";
+import { unwrapAsync } from "../utils";
 
 export const ZRegisterNewProductSagaArgs = z.object({
   cartId: z.uuidv7(),
@@ -36,71 +38,71 @@ export const ZRegisterNewProductSagaArgs = z.object({
 });
 export type RegisterNewProductSagaArgs = z.infer<typeof ZRegisterNewProductSagaArgs>;
 
-export const registerNewProductSaga = (args: RegisterNewProductSagaArgs) =>
-  withTransaction(
-    Effect.gen(function* () {
-      const productService = yield* ProductService;
-      const cartService = yield* CartService;
-      const storeService = yield* StoreService;
-      const priceService = yield* PriceService;
-      const brandService = yield* BrandService;
-      const blobService = yield* BlobService;
-      const productMediaService = yield* ProductMediaService;
-      const ctx = yield* RequestContext;
-      const { user } = yield* ctx.auth;
+export function registerNewProductSaga(args: RegisterNewProductSagaArgs, ctx: Context) {
+  return ResultAsync.fromPromise(
+    db.transaction(async (tx) => {
+      const productServiceTx = productService.withTransaction(tx);
+      const cartServiceTx = cartService.withTransaction(tx);
+      const priceServiceTx = priceService.withTransaction(tx);
+      const brandServiceTx = brandService.withTransaction(tx);
+      const productMediaServiceTx = productMediaService.withTransaction(tx);
 
-      if (args.storeId) {
-        yield* storeService.findById({ id: args.storeId });
-      }
+      const { user } = ctx.auth;
 
-      const cart = yield* cartService.findById({ id: args.cartId });
+      const cart = await unwrapAsync(cartServiceTx.get(args.cartId));
 
-      const blob = yield* blobService.uploadFile({
-        upsert: true,
-        bucket: "product-ug",
-        path: `${user.id}/products/${args.product.barcode}.jpg`,
-        file: {
-          base64: args.media.base64,
-          mimeType: args.media.mimeType || "image/jpeg",
-        },
-      });
+      const blob = await unwrapAsync(
+        blobService.uploadFile({
+          upsert: true,
+          bucket: "product-ug",
+          path: `${user.id}/products/${args.product.barcode}.jpg`,
+          file: {
+            base64: args.media.base64,
+            mimeType: args.media.mimeType || "image/jpeg",
+          },
+        }),
+      );
 
-      const brand = yield* brandService.create({ name: args.product.brand });
+      const brand = await unwrapAsync(brandServiceTx.create({ name: args.product.brand }));
 
-      const product = yield* productService
-        .create({
-          ...args.product,
-          brand: brand.id,
-        })
-        .pipe(Effect.tapError((error) => Effect.logError(error.cause)));
+      const product = await unwrapAsync(
+        productServiceTx.create({ ...args.product, brand: brand.id }, ctx),
+      );
 
-      yield* productMediaService
-        .create({
-          productId: product.id,
-          mediaType: "image",
-          objectId: blob.id,
-          tags: ["user-generated"],
-        })
-        .pipe(
-          Effect.tapErrorCause((cause) => Effect.logError("Failed to create product media", cause)),
-        );
-
-      const price = yield* priceService.create({
+      await productMediaServiceTx.create({
         productId: product.id,
-        storeId: args.storeId,
-        userId: user.id,
-        price: args.price.value,
-        currency: args.price.currency,
-        type: args.price.type,
+        mediaType: "image",
+        objectId: blob.id,
+        tags: ["user-generated"],
       });
 
-      const cartItem = yield* cartService.addProduct({
-        cartId: cart.id,
-        productId: product.id,
-        priceId: price.id,
-        quantity: 1,
-      });
+      const price = await unwrapAsync(
+        priceServiceTx.create(
+          {
+            productId: product.id,
+            storeId: args.storeId,
+            price: args.price.value,
+            currency: args.price.currency,
+            type: args.price.type,
+          },
+          ctx,
+        ),
+      );
+
+      const cartItem = await unwrapAsync(
+        cartServiceTx.addProduct(
+          {
+            cartId: cart.id,
+            productId: product.id,
+            priceId: price.id,
+            quantity: 1,
+          },
+          ctx,
+        ),
+      );
 
       return cartItem;
     }),
-  ).pipe(Effect.tapErrorCause((cause) => Effect.logError("Failed to register new product", cause)));
+    (error) => error as DrizzleQueryError,
+  );
+}

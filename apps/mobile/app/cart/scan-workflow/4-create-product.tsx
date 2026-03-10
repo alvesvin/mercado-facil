@@ -20,7 +20,7 @@ export default function CreateProduct() {
     registerNewProduct(
       {
         cartId: context.cart!.id,
-        storeId: context.cart!.storeId,
+        storeId: context.cart!.store!.id,
         media: context.photo!,
         // TODO: handle price types correctly and price2
         price: {

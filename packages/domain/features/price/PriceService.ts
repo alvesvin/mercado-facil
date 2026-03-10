@@ -1,5 +1,6 @@
-import { Effect, Either } from "effect";
-import { RequestContext } from "../../services/RequestContext";
+import type { Db } from "@mercado-facil/db";
+import { okAsync, ResultAsync } from "neverthrow";
+import type { Context } from "../../types";
 import { PriceRepository } from "./PriceRepository";
 import type { CreatePriceArgs, FindConsensusArgs } from "./types";
 
@@ -64,60 +65,62 @@ function removeOutliers(prices: number[]): number[] {
   return sorted.filter((p) => p >= lowerBound && p <= upperBound);
 }
 
-export class PriceService extends Effect.Service<PriceService>()("PriceService", {
-  effect: Effect.gen(function* () {
-    const priceRepository = yield* PriceRepository;
+export class PriceService {
+  constructor(private readonly priceRepository: PriceRepository) {}
 
-    return {
-      create: (args: CreatePriceArgs) =>
-        Effect.gen(function* () {
-          const ctx = yield* RequestContext;
-          const user = yield* ctx.auth.pipe(
-            Effect.map((ctx) => ctx.user),
-            Effect.either,
-          );
-          const price = yield* priceRepository.create({
-            ...args,
-            userId: Either.isRight(user) ? user.right.id : undefined,
-          });
-          return price;
-        }),
+  withTransaction(db: Db) {
+    return new PriceService(new PriceRepository(db));
+  }
 
-      findConsensus: (args: FindConsensusArgs) =>
-        Effect.gen(function* () {
-          const [unitPrices, perKgPrices, perLPrices] = yield* Effect.all([
-            priceRepository.search({
-              filters: { ...args, type: "unit" },
-              pagination: { limit: 20, page: 1 },
-            }),
-            priceRepository.search({
-              filters: { ...args, type: "per_kg" },
-              pagination: { limit: 20, page: 1 },
-            }),
-            priceRepository.search({
-              filters: { ...args, type: "per_l" },
-              pagination: { limit: 20, page: 1 },
-            }),
-          ]);
+  create(args: Omit<CreatePriceArgs, "userId">, ctx: Context) {
+    const { user } = ctx.auth;
+    return this.priceRepository.create({
+      ...args,
+      userId: user.id,
+    });
+  }
 
-          const getConsensus = (prices: typeof unitPrices) => {
-            const priceNumbers = prices.map((price) => price.price);
-            const filteredPrices = removeOutliers(priceNumbers);
-            const consensusPrice = median(filteredPrices);
-            const price = prices.find((price) => price.price === consensusPrice);
-            return price;
-          };
-
-          const unitConsensus = getConsensus(unitPrices);
-          const perKgConsensus = getConsensus(perKgPrices);
-          const perLConsensus = getConsensus(perLPrices);
-
-          return {
-            unit: unitConsensus,
-            per_kg: perKgConsensus,
-            per_l: perLConsensus,
-          };
-        }),
+  findConsensus(args: FindConsensusArgs) {
+    const getConsensus = (
+      prices: { id: string; price: number; currency: string; type: "unit" | "per_kg" | "per_l" }[],
+    ) => {
+      const priceNumbers = prices.map((price) => price.price);
+      const filteredPrices = removeOutliers(priceNumbers);
+      const consensusPrice = median(filteredPrices);
+      const price = prices.find((price) => price.price === consensusPrice);
+      return price;
     };
-  }),
-}) {}
+
+    return ResultAsync.combine([
+      this.priceRepository.search({
+        filters: { ...args, type: "unit" },
+        pagination: { limit: 20, page: 1 },
+      }),
+      this.priceRepository.search({
+        filters: { ...args, type: "per_kg" },
+        pagination: { limit: 20, page: 1 },
+      }),
+      this.priceRepository.search({
+        filters: { ...args, type: "per_l" },
+        pagination: { limit: 20, page: 1 },
+      }),
+    ])
+      .map(([unitPrices, perKgPrices, perLPrices]) => [
+        getConsensus(unitPrices),
+        getConsensus(perKgPrices),
+        getConsensus(perLPrices),
+      ])
+      .map(([unitConsensus, perKgConsensus, perLConsensus]) => ({
+        unit: unitConsensus,
+        per_kg: perKgConsensus,
+        per_l: perLConsensus,
+      }))
+      .orElse(() =>
+        okAsync({
+          unit: undefined,
+          per_kg: undefined,
+          per_l: undefined,
+        }),
+      );
+  }
+}

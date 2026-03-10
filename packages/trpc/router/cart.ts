@@ -1,83 +1,35 @@
-import { DB } from "@mercado-facil/db/service";
-import { CartService } from "@mercado-facil/domain/features/cart/CartService";
 import {
   ZCreateCartItemArgs,
-  ZFindByIdArgs,
   ZIndexArgs,
   ZUpdateStoreArgs,
 } from "@mercado-facil/domain/features/cart/types";
-import { LiveRuntime } from "@mercado-facil/domain/runtime/live";
+import { cartService } from "@mercado-facil/domain/features/singletons";
 import {
   registerNewProductSaga,
   ZRegisterNewProductSagaArgs,
 } from "@mercado-facil/domain/sagas/registerNewProduct";
-import { RequestContext } from "@mercado-facil/domain/services/RequestContext";
-import { Effect } from "effect";
+import { z } from "zod";
 import { procedure, router } from "../trpc";
+import { unwrapAsync } from "../utils";
 
 export const cart = router({
-  index: procedure.input(ZIndexArgs).query(({ input, ctx }) =>
-    LiveRuntime.runPromise(
-      Effect.gen(function* () {
-        const cartService = yield* CartService;
-        const carts = yield* cartService.index(input);
-        return carts;
-      }).pipe(Effect.provide(DB), Effect.provide(RequestContext.Default(ctx))),
-    ),
-  ),
+  index: procedure
+    .input(ZIndexArgs)
+    .query(({ input, ctx }) => unwrapAsync(cartService.index(input, ctx))),
 
-  findById: procedure.input(ZFindByIdArgs).query(({ input }) =>
-    LiveRuntime.runPromise(
-      Effect.gen(function* () {
-        const cartService = yield* CartService;
-        const cart = yield* cartService.findById(input);
-        return cart;
-      }).pipe(Effect.provide(DB)),
-    ),
-  ),
+  get: procedure.input(z.string()).query(({ input }) => unwrapAsync(cartService.get(input))),
 
-  start: procedure.query(({ ctx }) =>
-    LiveRuntime.runPromise(
-      Effect.gen(function* () {
-        const cartService = yield* CartService;
-        const cart = yield* cartService.startCart();
-        return cart;
-      }).pipe(
-        Effect.provide(RequestContext.Default(ctx)),
-        Effect.provide(DB),
-        Effect.tapErrorCause(Effect.logError),
-      ),
-    ),
-  ),
+  start: procedure.query(({ ctx }) => unwrapAsync(cartService.startCart(ctx))),
 
-  updateStore: procedure.input(ZUpdateStoreArgs).mutation(({ input }) =>
-    LiveRuntime.runPromise(
-      Effect.gen(function* () {
-        const cartService = yield* CartService;
-        const cart = yield* cartService.updateStore(input);
-        return cart;
-      }).pipe(Effect.provide(DB)),
-    ),
-  ),
+  updateStore: procedure
+    .input(ZUpdateStoreArgs)
+    .mutation(({ input }) => unwrapAsync(cartService.updateStore(input))),
 
   reigsterNewProductSaga: procedure
     .input(ZRegisterNewProductSagaArgs)
-    .mutation(({ ctx, input }) =>
-      LiveRuntime.runPromise(
-        registerNewProductSaga(input).pipe(
-          Effect.provide(RequestContext.Default(ctx)),
-          Effect.provide(DB),
-        ),
-      ),
-    ),
+    .mutation(({ input, ctx }) => unwrapAsync(registerNewProductSaga(input, ctx))),
 
-  addProduct: procedure.input(ZCreateCartItemArgs).mutation(({ input, ctx }) =>
-    LiveRuntime.runPromise(
-      Effect.gen(function* () {
-        const cartService = yield* CartService;
-        const cartItem = yield* cartService.addProduct(input);
-        return cartItem;
-      }).pipe(Effect.provide(RequestContext.Default(ctx)), Effect.provide(DB)),
-    ),
-  ),
+  addProduct: procedure
+    .input(ZCreateCartItemArgs)
+    .mutation(({ input, ctx }) => unwrapAsync(cartService.addProduct(input, ctx))),
 });

@@ -1,5 +1,8 @@
-import { drizzle } from "drizzle-orm/node-postgres";
+import { drizzle } from "drizzle-orm/postgres-js";
+import postgres from "postgres";
 import { accountTable, sessionTable, userTable, verificationTable } from "./schema";
+
+export type { DrizzleQueryError } from "drizzle-orm";
 
 // For better auth
 const schema = {
@@ -9,4 +12,7 @@ const schema = {
   verification: verificationTable,
 };
 
-export const db = drizzle(process.env.DATABASE_URL!, { schema });
+const client = postgres(process.env.DATABASE_URL!, { prepare: false });
+export const db = drizzle({ client, schema });
+
+export type Db = Omit<typeof db, "$client">;

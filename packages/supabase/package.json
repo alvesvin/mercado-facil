@@ -5,8 +5,7 @@
   "private": true,
   "dependencies": {
     "@supabase/ssr": "^0.9.0",
-    "@supabase/supabase-js": "^2.98.0",
-    "effect": "^3.19.19"
+    "@supabase/supabase-js": "^2.98.0"
   },
   "devDependencies": {
     "@mercado-facil/typescript-config": "workspace:*",
