@@ -2,7 +2,7 @@ name: Isolated Integration Tests
 on:
   push:
     branches:
-      - main
+      - test-workflow
 
 env:
   SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
@@ -21,7 +21,7 @@ jobs:
 
       - name: Up db
         run: |
-          docker buildx build -f .docker/postgis-18/Dockerfile -t mercado-facil-db .
+          docker buildx build -t mercado-facil-db .docker/postgis-18
           docker run -d --name mercado-facil-db -e POSTGRES_PASSWORD=postgres -p 5432:5432 mercado-facil-db
 
       - name: Run tests
