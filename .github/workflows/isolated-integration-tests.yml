@@ -23,6 +23,9 @@ jobs:
         run: |
           docker buildx build -t mercado-facil-db .docker/postgis-18
           docker run -d --name mercado-facil-db -e POSTGRES_PASSWORD=postgres -p 5432:5432 mercado-facil-db
+          while ! docker exec mercado-facil-db pg_isready -U postgres; do
+            sleep 1
+          done
 
       - name: Run tests
         run: bun --filter=@mercado-facil/trpc run test
