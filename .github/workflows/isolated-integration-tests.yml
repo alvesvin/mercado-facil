@@ -1,0 +1,22 @@
+name: Isolated Integration Tests
+on:
+  push:
+    branches:
+      - main
+
+env:
+  SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
+
+jobs:
+  trpc:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6.0.2
+
+      - uses: oven-sh/setup-bun@v2
+
+      - name: Setup
+        run: docker compose -f docker-compose.api-test.yml run --build --rm api bun --filter=@mercado-facil/db db:push
+
+      - name: Run tests
+        run: docker compose -f docker-compose.api-test.yml run --rm api bun --filter=@mercado-facil/trpc run test

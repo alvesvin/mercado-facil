@@ -39,6 +39,7 @@ export class CartRepository {
           and(
             isNull(cartTable.deletedAt),
             isNotNull(cartTable.storeId),
+            args.filter.userId ? eq(cartTable.userId, args.filter.userId) : undefined,
             args.pagination.cursor ? gt(cartTable.id, args.pagination.cursor) : undefined,
           ),
         )
